@@ -1,0 +1,34 @@
+PADAONE POUR WINDOWS
+====================
+
+Les téléphones des participants deviennent des outils de participation ;
+les résultats s'affichent au vidéoprojecteur. Tout reste sur ce PC.
+
+LANCER
+------
+1. Décompressez le dossier (clic droit > Extraire tout), puis double-cliquez sur Padaone.exe.
+2. Première fois : Windows peut afficher « Windows a protégé votre ordinateur ».
+   Cliquez sur « Informations complémentaires » puis « Exécuter quand même ».
+   (Padaone n'est pas encore signé numériquement.)
+3. Le pare-feu Windows demande l'autorisation : cochez « Réseaux privés » et
+   validez. Sans cela, les téléphones ne pourront pas joindre le PC.
+4. Une fenêtre noire affiche le code et les liens de la séance ; la console s'ouvre
+   dans le navigateur. Projetez le lien « Écran » au vidéoprojecteur.
+5. Pour terminer : Ctrl+C dans la fenêtre noire, ou fermez-la.
+
+RÉSEAU
+------
+Les téléphones doivent être sur le même Wi-Fi que le PC. Le réseau doit être déclaré
+« privé » dans Windows (Paramètres > Réseau et Internet > Wi-Fi > Propriétés).
+Le point d'accès Wi-Fi piloté par Padaone n'existe que sous Linux pour l'instant :
+sous Windows, utilisez le Wi-Fi de la salle, un routeur de voyage, ou le
+« Point d'accès sans fil mobile » de Windows (Paramètres > Réseau et Internet).
+
+OPTIONS
+-------
+Dans un terminal (PowerShell) ouvert dans ce dossier :
+  .\Padaone.exe --titre "Formation jour 1" --ouvrir-console
+  .\Padaone.exe --help
+
+Guide complet : https://github.com/julienrat/padaone_V2/blob/main/docs/guide/guide-formateur.md
+Licence : GNU AGPL v3 ou ultérieure.

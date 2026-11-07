@@ -20,7 +20,6 @@ pub fn hexa() -> Result<String> {
 /// `nouvelle` : en tirer une autre (par exemple si un lien a été projeté par erreur).
 pub fn cle_persistante(fichier: &std::path::Path, nouvelle: bool) -> Result<String> {
     use std::io::Write;
-    use std::os::unix::fs::OpenOptionsExt;
 
     if !nouvelle {
         if let Ok(texte) = std::fs::read_to_string(fichier) {
@@ -35,21 +34,22 @@ pub fn cle_persistante(fichier: &std::path::Path, nouvelle: bool) -> Result<Stri
         std::fs::create_dir_all(dossier)?;
     }
     let _ = std::fs::remove_file(fichier);
-    let mut f =
-        std::fs::OpenOptions::new().write(true).create_new(true).mode(0o600).open(fichier)?;
+    let mut options = std::fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    // Sous Windows, le dossier %APPDATA% est déjà réservé à l'utilisateur.
+    let mut f = options.open(fichier)?;
     writeln!(f, "{cle}")?;
     Ok(cle)
 }
 
-/// Emplacement par défaut : `$XDG_CONFIG_HOME/padaone/cle` ou `~/.config/padaone/cle`.
+/// Emplacement par défaut de la clé : fichier `cle` du dossier de configuration (voir [`crate::chemins`]).
 pub fn fichier_cle() -> Option<std::path::PathBuf> {
-    let base = std::env::var_os("XDG_CONFIG_HOME")
-        .filter(|v| !v.is_empty())
-        .map(std::path::PathBuf::from)
-        .or_else(|| {
-            std::env::var_os("HOME").map(|h| std::path::PathBuf::from(h).join(".config"))
-        })?;
-    Some(base.join("padaone").join("cle"))
+    crate::chemins::configuration().map(|d| d.join("cle"))
 }
 
 /// Vrai si la chaîne a la forme d'un jeton produit par [`hexa`].
@@ -72,13 +72,16 @@ mod tests {
 
     #[test]
     fn cle_gardee_puis_renouvelee() {
-        use std::os::unix::fs::PermissionsExt;
         let dossier = std::env::temp_dir().join(format!("padaone-cle-{}", hexa().unwrap()));
         let fichier = dossier.join("cle");
         let a = cle_persistante(&fichier, false).unwrap();
         assert_eq!(cle_persistante(&fichier, false).unwrap(), a, "même clé au lancement suivant");
-        let mode = std::fs::metadata(&fichier).unwrap().permissions().mode() & 0o777;
-        assert_eq!(mode, 0o600, "lisible par l'utilisateur seul");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let mode = std::fs::metadata(&fichier).unwrap().permissions().mode() & 0o777;
+            assert_eq!(mode, 0o600, "lisible par l'utilisateur seul");
+        }
         let b = cle_persistante(&fichier, true).unwrap();
         assert_ne!(a, b);
         assert_eq!(cle_persistante(&fichier, false).unwrap(), b);

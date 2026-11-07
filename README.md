@@ -22,6 +22,13 @@ Guide complet du poste de développement : [docs/00-demarrage.md](docs/00-demarr
 **Vous êtes formateur ou formatrice ?** Lisez le [guide du formateur](docs/guide/guide-formateur.md) :
 toutes les fonctionnalités, captures d'écran à l'appui.
 
+## Windows et macOS
+
+La [page des versions](https://github.com/julienrat/padaone_V2/releases) propose aussi un zip pour
+Windows (`Padaone.exe`) et pour macOS (binaire universel). Le point d'accès Wi-Fi et le portail captif
+restent propres à Linux. Les trois versions sont fabriquées automatiquement par GitHub Actions
+(`.github/workflows/publication.yml`) quand une étiquette `v…` est envoyée.
+
 ## AppImage
 
 ```bash

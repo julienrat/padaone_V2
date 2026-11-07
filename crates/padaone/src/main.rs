@@ -6,6 +6,7 @@
 //!   depuis le terminal, et aide pour les réglages qui demandent les droits administrateur.
 
 mod alea;
+mod chemins;
 mod etat;
 mod journal;
 mod pages;
@@ -151,14 +152,28 @@ async fn main() -> Result<()> {
                 .unwrap_or_else(|_| "padaone=info".into()),
         )
         .init();
-    let options = Options::parse();
+    // Sans aucun argument sous Windows ou macOS : lancé par double-clic. On ouvre alors la
+    // console dans le navigateur, et sous Windows on garde la fenêtre ouverte en cas d'erreur.
+    let double_clic = cfg!(any(windows, target_os = "macos")) && std::env::args_os().len() == 1;
+    let mut options = Options::parse();
+    options.ouvrir_console |= double_clic;
     let executeur: Arc<dyn Executeur> =
         if options.reseau_simule { Arc::new(Simulation::default()) } else { Arc::new(Systeme) };
 
-    match &options.commande {
+    let resultat = match &options.commande {
         Some(SousCommande::PointAcces(action)) => point_acces_cli(action, executeur.as_ref()),
         None => servir(&options, executeur).await,
+    };
+    if let Err(e) = &resultat {
+        if double_clic && cfg!(windows) {
+            println!();
+            println!("  Padaone n'a pas pu démarrer : {e:#}");
+            println!("  Appuyez sur Entrée pour fermer cette fenêtre.");
+            let mut rien = String::new();
+            let _ = std::io::stdin().read_line(&mut rien);
+        }
     }
+    resultat
 }
 
 async fn servir(options: &Options, executeur: Arc<dyn Executeur>) -> Result<()> {
@@ -201,7 +216,8 @@ async fn servir(options: &Options, executeur: Arc<dyn Executeur>) -> Result<()> 
         .route("/ws", get(ws::route))
         .fallback(pages::servir)
         .with_state(Arc::clone(&partage));
-    if !options.sans_portail {
+    // Portail captif : il accompagne le point d'accès NetworkManager, donc Linux seulement.
+    if !options.sans_portail && cfg!(target_os = "linux") {
         tokio::spawn(portail::servir_dns(Arc::clone(&partage)));
         if options.port != portail::PORT_HTTP {
             tokio::spawn(portail::ecouter_port_80(Arc::clone(&partage), app.clone()));
@@ -443,9 +459,18 @@ fn adresse_locale() -> IpAddr {
     }
 }
 
-/// Ouvre une adresse locale dans le navigateur par défaut (`xdg-open`), sans attendre.
+/// Ouvre une adresse locale dans le navigateur par défaut (`xdg-open`, `open` ou `start`), sans attendre.
 fn ouvrir_navigateur(adresse: &str) {
-    let lancement = std::process::Command::new("xdg-open")
+    let mut commande = if cfg!(windows) {
+        let mut c = std::process::Command::new("cmd");
+        c.args(["/C", "start", ""]);
+        c
+    } else if cfg!(target_os = "macos") {
+        std::process::Command::new("open")
+    } else {
+        std::process::Command::new("xdg-open")
+    };
+    let lancement = commande
         .arg(adresse)
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())

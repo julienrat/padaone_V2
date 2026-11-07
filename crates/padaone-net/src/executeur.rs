@@ -17,6 +17,11 @@ use crate::PROFIL;
 pub enum ErreurReseau {
     #[error("nmcli est introuvable : NetworkManager est-il installé ?")]
     NmcliAbsent,
+    #[error(
+        "Padaone ne pilote le point d'accès Wi-Fi que sous Linux pour l'instant ; ici, utilisez \
+         le Wi-Fi de la salle, le partage de connexion du système ou un routeur de voyage"
+    )]
+    SystemeNonPrisEnCharge,
     #[error("échec de « nmcli {commande} » : {message}")]
     Echec { commande: String, message: String },
     #[error("aucune carte Wi-Fi de ce PC ne sait faire point d'accès")]
@@ -52,6 +57,9 @@ pub struct Systeme;
 
 impl Executeur for Systeme {
     fn nmcli(&self, arguments: &[String]) -> Result<String, ErreurReseau> {
+        if !cfg!(target_os = "linux") {
+            return Err(ErreurReseau::SystemeNonPrisEnCharge);
+        }
         let sortie = Command::new("nmcli")
             .args(arguments)
             // Sorties en anglais, stables pour l'analyse quelle que soit la langue du poste.

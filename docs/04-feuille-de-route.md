@@ -88,4 +88,5 @@ Durées estimées en semaines de travail à temps plein. Claude Code coche les c
 ## Phase 6 — Délibération (5 semaines)
 
 - [ ] Tamis, Consentement, Tirelire, Tri par affinités, Relance, Courbe d'énergie, Sismographe
-- [ ] Ensuite : version Windows, paquet Flatpak, traductions
+- [x] Versions Windows et macOS (serveur et activités ; point d'accès Linux seulement), publiées par GitHub Actions
+- [ ] Ensuite : point d'accès sous Windows, paquet Flatpak, traductions

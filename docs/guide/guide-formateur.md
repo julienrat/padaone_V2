@@ -40,12 +40,15 @@ séance à l'autre ; si un lien a fuité, relancez Padaone avec l'option `--nouv
 
 ## 2. Lancer Padaone
 
-### Avec l'AppImage (le plus simple)
+Téléchargez la version de votre système sur la page des
+[versions de Padaone](https://github.com/julienrat/padaone_V2/releases) : Linux, Windows ou macOS.
 
-Padaone tient en un seul fichier : `Padaone-0.1.0-x86_64.AppImage`, qui tourne sur tout Linux 64 bits.
+### Sous Linux : l'AppImage
+
+Padaone tient en un seul fichier : `Padaone-0.2.0-x86_64.AppImage`, qui tourne sur tout Linux 64 bits.
 
 1. La première fois, rendez le fichier exécutable : clic droit › *Propriétés* › *Permissions* ›
-   cochez *Autoriser l'exécution*. Ou, dans un terminal : `chmod +x Padaone-0.1.0-x86_64.AppImage`.
+   cochez *Autoriser l'exécution*. Ou, dans un terminal : `chmod +x Padaone-0.2.0-x86_64.AppImage`.
 2. **Double-cliquez** dessus : un terminal s'ouvre avec le code et les liens de la séance, et la
    console s'ouvre toute seule dans votre navigateur.
 3. Pour terminer la séance : dans ce terminal, **Ctrl+C**.
@@ -53,7 +56,7 @@ Padaone tient en un seul fichier : `Padaone-0.1.0-x86_64.AppImage`, qui tourne s
 Pour donner un titre à la séance, lancez-la depuis un terminal :
 
 ```bash
-./Padaone-0.1.0-x86_64.AppImage --titre "Animer des réunions participatives · jour 1" --ouvrir-console
+./Padaone-0.2.0-x86_64.AppImage --titre "Animer des réunions participatives · jour 1" --ouvrir-console
 ```
 
 Le terminal affiche alors :
@@ -66,6 +69,32 @@ Le terminal affiche alors :
   Écran        : http://192.168.1.23:8080/ecran?cle=…
   Console      : http://localhost:8080/console?cle=…
 ```
+
+### Sous Windows
+
+1. Décompressez `Padaone-0.2.0-windows-x86_64.zip` (clic droit › *Extraire tout*), puis double-cliquez
+   sur `Padaone.exe`.
+2. La première fois, Windows affiche « Windows a protégé votre ordinateur » : cliquez sur
+   *Informations complémentaires* puis *Exécuter quand même* (Padaone n'est pas encore signé).
+3. Le pare-feu demande l'autorisation : cochez **Réseaux privés**. Sans cela, les téléphones ne
+   joindront pas le PC. Le Wi-Fi de la salle doit être déclaré « privé » dans Windows.
+4. Une fenêtre noire affiche le code et les liens ; la console s'ouvre dans le navigateur.
+   Ctrl+C dans cette fenêtre (ou la fermer) termine la séance.
+
+### Sous macOS
+
+1. Décompressez `Padaone-0.2.0-macos-universel.zip` (Mac Apple ou Intel).
+2. La première fois, macOS bloque les programmes non signés par Apple : clic droit (ou Ctrl+clic) sur
+   `Padaone` › *Ouvrir* › *Ouvrir*. Au besoin : *Réglages Système* › *Confidentialité et sécurité* ›
+   *Ouvrir quand même*.
+3. Acceptez les connexions entrantes si macOS le demande.
+4. Le Terminal affiche le code et les liens ; la console s'ouvre dans le navigateur. Ctrl+C termine.
+
+> **Sous Windows et macOS**, tout fonctionne sauf le point d'accès Wi-Fi piloté par Padaone et le
+> portail captif (§ 7), propres à Linux pour l'instant. Utilisez le Wi-Fi de la salle, un routeur de
+> voyage, ou le partage de connexion du système (« Point d'accès sans fil mobile » sous Windows).
+
+### Ensuite, sur tous les systèmes
 
 Ouvrez le lien **Écran** dans une seconde fenêtre du navigateur, déplacez-la sur le vidéoprojecteur
 et passez-la en plein écran (F11). Le lien **Console** reste sur votre écran à vous.
@@ -320,7 +349,8 @@ Les téléphones doivent être sur le **même réseau** que votre PC.
 - **Le Wi-Fi de la salle marche et tout le monde peut s'y connecter** : rien à faire, l'adresse
   affichée à l'écran fonctionne.
 - **Il n'y a pas de Wi-Fi, il est saturé, ou il isole les appareils** (fréquent dans les hôtels et les
-  administrations) : votre PC devient lui-même le point d'accès Wi-Fi.
+  administrations) : votre PC devient lui-même le point d'accès Wi-Fi (**sous Linux** ; sous Windows
+  et macOS, prévoyez un routeur de voyage).
 
 ### La page « Point d'accès »
 
@@ -343,7 +373,7 @@ Dans la console, cliquez sur **Wi-Fi : point d'accès**.
 
 Le **diagnostic** à droite vérifie la carte, les bandes, la capacité estimée et les droits. Une coche
 verte partout : tout est prêt. Le diagnostic se lance aussi depuis un terminal, sans rien modifier :
-`./Padaone-0.1.0-x86_64.AppImage point-acces diag`.
+`./Padaone-0.2.0-x86_64.AppImage point-acces diag`.
 
 > **Combien de téléphones ?** Une carte Wi-Fi intégrée (Intel, la plus courante) tient souvent
 > **8 à 14 appareils**. Au-delà, branchez une clé Wi-Fi USB (une vingtaine d'euros) ou un petit
@@ -371,7 +401,7 @@ du système, à faire une seule fois par PC. Padaone ne les fait jamais lui-mêm
 commandes à copier dans un terminal.
 
 ```bash
-./Padaone-0.1.0-x86_64.AppImage point-acces portail
+./Padaone-0.2.0-x86_64.AppImage point-acces portail
 ```
 
 Tant que ce n'est pas fait, la page Point d'accès l'indique sous le réglage du portail, et Padaone
@@ -389,21 +419,23 @@ jamais ce mot de passe.
 - **Anonymat** : un participant n'est qu'un numéro tiré au hasard, gardé dans son navigateur. Aucun
   nom n'est demandé. La console voit les réponses, jamais leurs auteurs. Rien ne s'affiche à l'écran
   sous 3 réponses.
-- **Données** : tout reste sur votre PC. Chaque séance est enregistrée dans un **journal**
-  (`~/.local/share/padaone/seances/`), qui ne contient ni nom ni adresse. Supprimez-le quand vous
+- **Données** : tout reste sur votre PC. Chaque séance est enregistrée dans un **journal**, qui ne
+  contient ni nom ni adresse : `~/.local/share/padaone/seances/` sous Linux,
+  `~/Library/Application Support/padaone/seances/` sous macOS, `%APPDATA%\padaone\seances\` sous Windows. Supprimez-le quand vous
   n'en avez plus besoin.
 - **Reprise après un incident** (PC éteint par erreur, plantage) : relancez Padaone en lui donnant le
   journal de la séance. Le déroulé, les réponses et le code sont restaurés, et les téléphones se
   reconnectent seuls :
 
   ```bash
-  ./Padaone-0.1.0-x86_64.AppImage --reprendre ~/.local/share/padaone/seances/seance-…-342751.jsonl
+  ./Padaone-0.2.0-x86_64.AppImage --reprendre ~/.local/share/padaone/seances/seance-…-342751.jsonl
   ```
 
 ## 9. En cas de souci
 
 | Symptôme | Que faire |
 | --- | --- |
+| Les téléphones n'ouvrent pas la page (Windows) | Autoriser Padaone dans le pare-feu sur les réseaux privés, et déclarer le Wi-Fi « privé ». |
 | Les téléphones n'ouvrent pas la page | Vérifier qu'ils sont sur le même Wi-Fi que le PC. Sinon, démarrer le point d'accès (§ 7). Taper l'adresse affichée plutôt que scanner. |
 | « Ce code ne correspond pas à la séance en cours » | Le participant a gardé un ancien lien : rescanner le QR code de l'écran. |
 | La console ou l'écran affiche « Clé absente ou incorrecte » | Le lien est ancien (vous avez utilisé `--nouvelle-cle`) : rouvrir les liens affichés dans le terminal. |
@@ -432,4 +464,4 @@ jamais ce mot de passe.
 | `point-acces portail` | État du portail captif et commandes d'installation |
 | `point-acces demarrer` / `arreter` | Point d'accès depuis le terminal, sans la console |
 
-Toutes les options : `./Padaone-0.1.0-x86_64.AppImage --help`.
+Toutes les options : `./Padaone-0.2.0-x86_64.AppImage --help`.

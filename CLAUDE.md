@@ -20,7 +20,10 @@ et les noms du domaine. Réponds à Julien en français.
 - **L'animateur garde la main** : rien n'est projeté sans son geste (révéler, figer, masquer).
 - **Accessibilité** : cibles tactiles d'au moins 44 px, contraste d'au moins 4,5:1, jamais la couleur seule
   pour porter le sens, vrais `<button>` et `<label>`, repli en boutons pour chaque capteur.
-- **Linux d'abord** : le réseau passe par NetworkManager. Windows viendra plus tard.
+- **Linux d'abord** : le réseau passe par NetworkManager. Windows et macOS : serveur et activités
+  complets (code commun, `crates/padaone/src/chemins.rs` pour les dossiers) ; point d'accès et portail
+  captif Linux seulement. Vérifier : `cargo clippy --workspace --all-targets --target x86_64-pc-windows-msvc`
+  et `--target aarch64-apple-darwin`.
 
 ## Commandes
 
@@ -36,6 +39,8 @@ et les noms du domaine. Réponds à Julien en français.
   rien toucher : ajouter `--reseau-simule` (au serveur comme aux sous-commandes).
   Les liens à ouvrir (participants, écran et console avec la clé) s'affichent au lancement.
 - AppImage : `scripts/creer-appimage.sh` (binaire statique musl ; résultat dans `target/appimage/`).
+- Publier une version : mettre à jour `version` (Cargo.toml) et `paquets/notes-de-version.md`, commiter,
+  puis `git tag vX.Y.Z && git push origin vX.Y.Z` : GitHub Actions teste et publie Linux, Windows, macOS.
 - Une tâche n'est terminée que si fmt, clippy et les tests passent. Le skill `/verifier` enchaîne les trois.
 
 ## Architecture

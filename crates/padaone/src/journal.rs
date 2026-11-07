@@ -28,15 +28,9 @@ pub struct Journal {
 }
 
 impl Journal {
-    /// Dossier par défaut : `$XDG_DATA_HOME/padaone/seances` ou `~/.local/share/padaone/seances`.
+    /// Dossier par défaut : `seances` dans le dossier des données (voir [`crate::chemins`]).
     pub fn dossier_par_defaut() -> Option<PathBuf> {
-        let base = std::env::var_os("XDG_DATA_HOME")
-            .filter(|v| !v.is_empty())
-            .map(PathBuf::from)
-            .or_else(|| {
-            std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".local/share"))
-        })?;
-        Some(base.join("padaone").join("seances"))
+        crate::chemins::donnees().map(|d| d.join("seances"))
     }
 
     /// Crée un nouveau journal dans `dossier`, nommé d'après l'heure et le code.

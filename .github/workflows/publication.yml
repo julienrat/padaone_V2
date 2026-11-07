@@ -1,0 +1,127 @@
+# Publication de Padaone pour Linux, Windows et macOS.
+#
+# Déclenchement : envoi d'une étiquette de version (git tag v0.2.0 && git push origin v0.2.0),
+# ou à la main depuis l'onglet Actions (pour republier une version existante).
+# Étapes : tests sur les trois systèmes, fabrication des trois paquets, ajout à la release
+# (créée si besoin, en pré-version, avec les notes de paquets/notes-de-version.md).
+name: Publication
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version à publier, par exemple v0.2.0 (l'étiquette doit exister)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+  VERSION: ${{ github.event.inputs.version || github.ref_name }}
+
+jobs:
+  tests:
+    name: Tests (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - run: cargo test --workspace --locked
+
+  linux:
+    name: AppImage Linux
+    needs: tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - run: scripts/creer-appimage.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: target/appimage/*.AppImage
+
+  windows:
+    name: Windows
+    needs: tests
+    runs-on: windows-latest
+    env:
+      # Bibliothèque C intégrée : aucun « Visual C++ Redistributable » à installer.
+      RUSTFLAGS: "-C target-feature=+crt-static"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - run: cargo build --release --locked -p padaone
+      - name: Archive zip
+        shell: pwsh
+        run: |
+          $version = (Select-String -Path Cargo.toml -Pattern '^version = "(.*)"').Matches[0].Groups[1].Value
+          New-Item -ItemType Directory -Force dist/Padaone | Out-Null
+          Copy-Item target/release/padaone.exe dist/Padaone/Padaone.exe
+          Copy-Item paquets/windows/LISEZMOI.txt dist/Padaone/
+          Compress-Archive -Path dist/Padaone -DestinationPath "dist/Padaone-$version-windows-x86_64.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: dist/*.zip
+
+  macos:
+    name: macOS (universel)
+    needs: tests
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - run: rustup target add aarch64-apple-darwin x86_64-apple-darwin
+      - run: |
+          cargo build --release --locked -p padaone --target aarch64-apple-darwin
+          cargo build --release --locked -p padaone --target x86_64-apple-darwin
+      - name: Binaire universel et archive zip
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -1)
+          mkdir -p dist/Padaone
+          lipo -create -output dist/Padaone/Padaone \
+            target/aarch64-apple-darwin/release/padaone target/x86_64-apple-darwin/release/padaone
+          # Signature « ad hoc » (sans compte développeur) : exigée par les Mac Apple Silicon.
+          codesign --force --sign - dist/Padaone/Padaone
+          cp paquets/macos/LISEZMOI.txt dist/Padaone/
+          (cd dist && ditto -c -k --keepParent Padaone "Padaone-$version-macos-universel.zip")
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: dist/*.zip
+
+  publier:
+    name: Release
+    needs: [linux, windows, macos]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.VERSION }}
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Empreintes SHA-256
+        run: (cd dist && sha256sum * > SHA256SUMS.txt && cat SHA256SUMS.txt)
+      - name: Créer ou compléter la release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! gh release view "$VERSION" > /dev/null 2>&1; then
+            gh release create "$VERSION" --prerelease \
+              --title "Padaone ${VERSION#v}" --notes-file paquets/notes-de-version.md
+          fi
+          gh release upload "$VERSION" dist/* --clobber
