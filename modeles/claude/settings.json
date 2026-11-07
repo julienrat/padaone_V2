@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(cargo build *)",
+      "Bash(cargo check *)",
+      "Bash(cargo test *)",
+      "Bash(cargo clippy *)",
+      "Bash(cargo fmt *)",
+      "Bash(cargo run *)",
+      "Bash(cargo doc *)",
+      "Bash(cargo tree *)",
+      "Bash(cargo search *)",
+      "Bash(cargo metadata *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status)",
+      "Bash(nmcli -f WIFI-PROPERTIES device show *)",
+      "Bash(iw list)",
+      "Bash(ip -4 -o addr show)"
+    ],
+    "ask": [
+      "Bash(cargo add *)",
+      "Bash(cargo remove *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(nmcli *)",
+      "Bash(iw *)",
+      "Bash(sudo *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force *)",
+      "Read(./.env)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/formater-rust.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

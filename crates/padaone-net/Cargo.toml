@@ -1,0 +1,16 @@
+[package]
+name = "padaone-net"
+description = "Réseau de Padaone : point d'accès Wi-Fi via NetworkManager, diagnostic des cartes, QR Wi-Fi."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# Phase 0 : appels à `nmcli` via std::process::Command.
+# Plus tard : zbus pour parler à NetworkManager en D-Bus.
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[lints]
+workspace = true

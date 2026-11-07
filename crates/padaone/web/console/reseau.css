@@ -1,0 +1,321 @@
+/* Page « Point d'accès » (référence : docs/maquettes/Point-acces.dc.html). */
+
+.marque-texte {
+  font-family: var(--police-titre);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.haut-reseau {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 18px 24px 0;
+}
+
+.titre-statut {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.titre-statut h1 {
+  margin: 0;
+  font-size: 32px;
+}
+
+.statut-ap {
+  padding: 6px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-pilule);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.statut-ap.actif {
+  background: var(--menthe);
+}
+
+.statut-ap.arrete {
+  background: var(--surface);
+}
+
+.statut-ap.en-cours {
+  background: var(--soleil);
+}
+
+.b.gros {
+  min-height: 56px;
+  padding: 0 24px;
+  font-size: 18px;
+}
+
+.bandeau-simule,
+.message-ap {
+  margin: 12px 24px 0;
+  padding: 10px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  font-weight: 700;
+}
+
+.bandeau-simule {
+  background: var(--lilas);
+}
+
+.message-ap {
+  background: #e6fbf5;
+}
+
+.message-ap.erreur {
+  background: var(--peche);
+}
+
+.grille-reseau {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 16px;
+  padding: 16px 24px 24px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .grille-reseau {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reglages {
+  gap: 18px;
+}
+
+.fs {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.fs legend {
+  margin-bottom: 8px;
+  font-family: var(--police-titre);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.cartes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.carte-wifi,
+.opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 14px;
+  border: 2px solid var(--lilas);
+  border-radius: 16px;
+  cursor: pointer;
+}
+
+.carte-wifi:has(input:checked) {
+  border-color: var(--encre);
+  background: var(--lilas);
+}
+
+.carte-wifi.incapable {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.carte-wifi input,
+.opt input {
+  width: 22px;
+  height: 22px;
+  margin: 2px 0 0;
+  flex: 0 0 auto;
+  accent-color: var(--violet);
+}
+
+.infos-carte {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.opt {
+  font-weight: 400;
+  font-size: 15px;
+}
+
+.deux-colonnes,
+.trois-colonnes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.trois-colonnes {
+  grid-template-columns: auto auto minmax(140px, 1fr);
+}
+
+@media (max-width: 700px) {
+  .deux-colonnes,
+  .trois-colonnes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.champ-groupe {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.libelle {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ligne-champ {
+  display: flex;
+  gap: 6px;
+}
+
+.bascule {
+  display: flex;
+  gap: 4px;
+}
+
+.bascule .b {
+  min-height: 44px;
+  padding: 0 12px;
+  border-width: 2px;
+}
+
+.bascule .b[aria-pressed="true"] {
+  background: var(--encre);
+  color: #fff;
+}
+
+.avertissement {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid var(--encre);
+  border-radius: 14px;
+  background: var(--peche);
+  font-size: 14px;
+}
+
+.cote-reseau {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.constats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.constat {
+  display: flex;
+  gap: 10px;
+}
+
+.marque-constat {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--encre);
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.constat.bon .marque-constat {
+  background: var(--menthe);
+}
+
+.constat.attention .marque-constat {
+  background: var(--soleil);
+}
+
+.constat.bloquant .marque-constat {
+  background: var(--corail);
+}
+
+.appareils {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-weight: 700;
+}
+
+.appareils strong {
+  font-family: var(--police-titre);
+  font-size: 48px;
+}
+
+.apercu {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.apercu .qr {
+  width: 120px;
+  max-width: 120px;
+}
+
+.infos-apercu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.surligne {
+  align-self: flex-start;
+  padding: 0 8px;
+  border-radius: 8px;
+  background: var(--soleil);
+}
+
+.surligne:empty {
+  display: none;
+}
+
+.commande {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--encre);
+  color: #fff;
+  font-size: 14px;
+  overflow-x: auto;
+}
+
+.entete a.pilule:focus-visible,
+.carte-wifi:focus-within,
+.opt:focus-within {
+  outline: 3px solid var(--violet);
+  outline-offset: 2px;
+}

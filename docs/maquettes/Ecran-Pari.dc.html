@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Projection : Pari de certitude</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Lexend:wght@400;500;700&display=swap">
+<style>
+body{margin:0}
+a{color:#6C3BFF}a:hover{color:#4A1FD1}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; padding: 28px 48px 30px; background: #F6F3FF; color: #1B1530; font-family: 'Lexend', system-ui, sans-serif; display: flex; flex-direction: column; gap: 16px">
+  <header style="display: flex; flex-direction: column; gap: 8px">
+    <div style="display: flex; justify-content: space-between; align-items: center">
+      <span style="padding: 4px 14px; border-radius: 999px; background: #6C3BFF; color: #FFFFFF; border: 2px solid #1B1530; font-size: 17px; font-weight: 700">Pari de certitude · 3 sur 5</span>
+      <span style="font-size: 18px"><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px">31</strong> réponses</span>
+    </div>
+    <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 38px; line-height: 1.1; font-weight: 800; letter-spacing: -1px">Quelqu'un monopolise la parole : que faites-vous d'abord ?</h1>
+    <p style="margin: 0; font-size: 20px">La bonne réponse : <span style="padding: 2px 10px; border-radius: 8px; background: #FFD23F; font-weight: 700">B · Reformuler son propos, puis ouvrir aux autres</span></p>
+  </header>
+
+  <div style="flex: 1 1 auto; display: flex; gap: 28px; min-height: 0">
+    <div style="flex: 1 1 auto; display: grid; grid-template-columns: 120px minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: 30px minmax(0, 1fr) minmax(0, 1fr); gap: 14px">
+      <span></span>
+      <span style="font-size: 19px; font-weight: 700; align-self: end">Réponse juste</span>
+      <span style="font-size: 19px; font-weight: 700; align-self: end">Réponse fausse</span>
+
+      <span style="font-size: 19px; font-weight: 700; align-self: center">J'en étais sûr·e</span>
+      <div style="border-radius: 26px; padding: 16px 20px; background: #6C3BFF; color: #FFFFFF; border: 3px solid #1B1530; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; line-height: 1">12</span><span style="font-size: 21px; font-weight: 700">Acquis solide</span></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{q1}}" as="d" hint-placeholder-count="12"><span style="width: 18px; height: 18px; border-radius: 50%; background: #FFFFFF"></span></sc-for></div>
+      </div>
+      <div style="position: relative; border-radius: 26px; padding: 16px 20px; background: #FF6B4A; color: #1B1530; border: 3px solid #1B1530; box-shadow: 6px 6px 0 #1B1530; display: flex; flex-direction: column; gap: 10px">
+        <span style="position: absolute; right: -14px; top: -18px; padding: 6px 12px; border-radius: 12px; background: #FFD23F; border: 3px solid #1B1530; font-size: 16px; font-weight: 700; transform: rotate(5deg)">À reprendre !</span>
+        <div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; line-height: 1">8</span><span style="font-size: 21px; font-weight: 700">Fausses certitudes</span></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{q2}}" as="d" hint-placeholder-count="8"><span style="width: 18px; height: 18px; border-radius: 50%; background: #1B1530"></span></sc-for></div>
+      </div>
+
+      <span style="font-size: 19px; font-weight: 700; align-self: center">Je n'étais pas sûr·e</span>
+      <div style="border-radius: 26px; padding: 16px 20px; background: #E4DAFF; border: 3px solid #1B1530; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; line-height: 1; color: #4A1FD1">7</span><span style="font-size: 21px; font-weight: 700">À consolider</span></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{q3}}" as="d" hint-placeholder-count="7"><span style="width: 18px; height: 18px; border-radius: 50%; background: #6C3BFF"></span></sc-for></div>
+      </div>
+      <div style="border-radius: 26px; padding: 16px 20px; background: #FFE1D6; border: 3px solid #1B1530; display: flex; flex-direction: column; gap: 10px">
+        <div style="display: flex; align-items: baseline; gap: 12px"><span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; line-height: 1; color: #C2330F">4</span><span style="font-size: 21px; font-weight: 700">Doute utile</span></div>
+        <div style="display: flex; flex-wrap: wrap; gap: 6px"><sc-for list="{{q4}}" as="d" hint-placeholder-count="4"><span style="width: 18px; height: 18px; border-radius: 50%; background: #FF6B4A; border: 2px solid #1B1530; box-sizing: border-box"></span></sc-for></div>
+      </div>
+    </div>
+
+    <aside style="flex: 0 0 330px; display: flex; flex-direction: column; gap: 14px; padding: 20px; border-radius: 28px; background: #FFFFFF; border: 3px solid #1B1530">
+      <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 22px; font-weight: 800">Ce que la salle a répondu</h2>
+      <sc-for list="{{options}}" as="o" hint-placeholder-count="4">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <div style="display: flex; justify-content: space-between; gap: 10px; font-size: 16px"><span style="font-weight: {{o.weight}}">{{o.label}}</span><span style="font-weight: 700">{{o.n}}</span></div>
+          <div style="height: 14px; border-radius: 7px; background: #F6F3FF"><div style="height: 14px; border-radius: 7px; width: {{o.pct}}%; background: {{o.color}}"></div></div>
+        </div>
+      </sc-for>
+      <div style="margin-top: auto; padding: 14px 16px; border-radius: 18px; background: #FFD23F; border: 2px solid #1B1530; font-size: 17px; line-height: 1.35"><strong>À discuter :</strong> 6 des 8 fausses certitudes portent sur la réponse C.</div>
+    </aside>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const dots = (n) => Array.from({ length: n }, (_, i) => ({ i }));
+    const opts = [
+      { label: 'A · Rappeler les règles', n: 3, ok: false },
+      { label: 'B · Reformuler, puis ouvrir', n: 19, ok: true },
+      { label: 'C · Lui couper la parole', n: 7, ok: false },
+      { label: 'D · Attendre qu’il ait fini', n: 2, ok: false }
+    ];
+    return {
+      q1: dots(12), q2: dots(8), q3: dots(7), q4: dots(4),
+      options: opts.map((o) => ({
+        label: o.label, n: o.n,
+        pct: Math.round((o.n / 19) * 100),
+        color: o.ok ? '#6C3BFF' : '#B8B2C8',
+        weight: o.ok ? 700 : 400
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

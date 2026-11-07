@@ -1,0 +1,711 @@
+/* Téléphone des participants (référence : docs/maquettes/Tel-*.dc.html, 390 × 844). */
+
+html {
+  font-size: 100%;
+}
+
+html.grand-texte {
+  font-size: 125%;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px 6px;
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.marque .nom {
+  font-family: var(--police-titre);
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.bouton-aa {
+  min-width: 48px;
+  border-radius: var(--rayon-s);
+  border: 2px solid var(--encre);
+  background: var(--surface);
+  color: var(--encre);
+  font-weight: 700;
+}
+
+.bouton-aa[aria-pressed="true"] {
+  background: var(--encre);
+  color: #fff;
+}
+
+.bandeau {
+  margin: 4px 20px 0;
+  padding: 10px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  background: var(--soleil);
+  font-weight: 700;
+}
+
+.bandeau.erreur {
+  background: var(--peche);
+}
+
+.contenu {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 6px 20px 22px;
+}
+
+h1 {
+  margin: 0;
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+h1.question {
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.sous-titre {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  color: var(--encre-douce);
+}
+
+.carte {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 24px;
+}
+
+label {
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.champ-code {
+  height: 50px;
+  width: 100%;
+  padding: 0 12px;
+  border-radius: var(--rayon-s);
+  border: 2px solid var(--encre);
+  background: var(--menthe);
+  color: var(--encre);
+  font: inherit;
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.champ-code:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 3px;
+}
+
+.aide {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--encre-douce);
+}
+
+.bouton-principal {
+  margin-top: auto;
+  min-height: 60px;
+  font-size: 1.45rem;
+}
+
+.bouton-principal:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--encre);
+}
+
+/* Sondage */
+
+.etiquette {
+  align-self: flex-start;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.option {
+  width: 100%;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border: var(--contour);
+  border-radius: var(--rayon-m);
+  background: var(--surface);
+  color: var(--encre);
+  text-align: left;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.option .pastille-option {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--encre);
+  border-radius: 50%;
+  font-family: var(--police-titre);
+  font-weight: 800;
+}
+
+.option .texte {
+  flex: 1 1 auto;
+}
+
+.option .coche {
+  flex: 0 0 auto;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.option[aria-pressed="true"] {
+  background: var(--lilas);
+  box-shadow: var(--ombre);
+  transform: translate(-2px, -2px);
+}
+
+.option:disabled {
+  cursor: not-allowed;
+  opacity: 0.75;
+}
+
+.attente {
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.attente .bulle {
+  width: 96px;
+  height: 96px;
+  border: var(--contour);
+  border-radius: 50%;
+  background: var(--soleil);
+  box-shadow: var(--ombre);
+  animation: respire 2.4s ease-in-out infinite;
+}
+
+@keyframes respire {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.attente h1 {
+  font-size: 2rem;
+}
+
+.statut {
+  margin: 0;
+  padding: 10px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  background: var(--surface);
+  font-weight: 700;
+}
+
+.statut.ferme {
+  background: var(--peche);
+}
+
+/* Boutons secondaires et champs */
+
+.bouton-secondaire {
+  min-height: 50px;
+  padding: 0 18px;
+  border: var(--contour);
+  border-radius: var(--rayon-m);
+  background: var(--surface);
+  color: var(--encre);
+  font-weight: 700;
+}
+
+.bouton-principal:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.champ {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 12px;
+  border-radius: var(--rayon-s);
+  border: 2px solid var(--encre);
+  background: var(--surface);
+  color: var(--encre);
+  font: inherit;
+  font-size: 1.1rem;
+}
+
+.champ.zone {
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.champ:focus-visible,
+textarea:focus-visible,
+input[type="range"]:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 3px;
+}
+
+.compteur-car {
+  align-self: flex-end;
+  margin-top: -8px;
+}
+
+h2 {
+  margin: 6px 0 0;
+  font-size: 1.25rem;
+}
+
+.etiquette.type-cartons,
+.etiquette.type-meteo {
+  background: var(--menthe);
+}
+
+.etiquette.type-nuage,
+.etiquette.type-roti {
+  background: var(--rose);
+}
+
+.etiquette.type-pari,
+.etiquette.type-echelle {
+  background: var(--soleil);
+}
+
+.etiquette.type-ouverte,
+.etiquette.type-questions {
+  background: var(--lilas);
+}
+
+.etiquette {
+  background: var(--soleil);
+}
+
+/* Envoyé */
+
+.envoye {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 20px 16px;
+  border: var(--contour);
+  border-radius: 24px;
+  background: #e6fbf5;
+  text-align: center;
+}
+
+.coche-ronde {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--contour);
+  border-radius: 50%;
+  background: var(--menthe);
+  font-size: 1.8rem;
+  font-weight: 800;
+}
+
+.envoye-titre {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.rappel {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* Cartons */
+
+.option.carton {
+  min-height: 80px;
+  justify-content: center;
+  font-size: 1.4rem;
+}
+
+.carton-plein {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  text-align: center;
+}
+
+.carton-libelle {
+  font-family: var(--police-titre);
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+
+.carton-consigne {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+/* Nuage */
+
+.ligne-saisie {
+  display: flex;
+  gap: 8px;
+}
+
+.bouton-plus {
+  flex: 0 0 auto;
+  width: 50px;
+  border: var(--contour);
+  border-radius: var(--rayon-s);
+  background: var(--violet);
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.bouton-plus:disabled {
+  opacity: 0.4;
+}
+
+.jetons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.jeton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-pilule);
+  background: var(--lilas);
+  font-weight: 700;
+}
+
+.jeton button {
+  min-width: 44px;
+  border: 0;
+  border-left: 2px solid var(--encre);
+  border-radius: 0 var(--rayon-pilule) var(--rayon-pilule) 0;
+  background: transparent;
+  font-size: 1.2rem;
+}
+
+/* Échelle et ROTI */
+
+.grille-echelle {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.grille-roti {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.case-echelle {
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: var(--contour);
+  border-radius: var(--rayon-s);
+  background: var(--surface);
+  color: var(--encre);
+  font-family: var(--police-titre);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.case-echelle small {
+  font-family: var(--police-texte);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.case-echelle[aria-pressed="true"],
+.case-certitude[aria-pressed="true"] {
+  background: var(--violet);
+  color: #fff;
+  box-shadow: var(--ombre);
+}
+
+.case-echelle:disabled,
+.case-certitude:disabled {
+  opacity: 0.5;
+}
+
+.libelles-echelle {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--encre-douce);
+}
+
+/* Météo */
+
+.carre-meteo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 340px;
+  align-self: center;
+  border: var(--contour);
+  border-radius: var(--rayon-m);
+  background:
+    linear-gradient(to right, transparent 49.5%, var(--lilas) 49.5%, var(--lilas) 50.5%, transparent 50.5%),
+    linear-gradient(to top, transparent 49.5%, var(--lilas) 49.5%, var(--lilas) 50.5%, transparent 50.5%),
+    var(--surface);
+  touch-action: none;
+}
+
+.axe {
+  position: absolute;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--encre-douce);
+}
+
+.axe-x {
+  right: 8px;
+  bottom: 6px;
+}
+
+.axe-y {
+  left: 6px;
+  top: 8px;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.point-meteo {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  margin: 0 0 -16px -16px;
+  border: var(--contour);
+  border-radius: 50%;
+  background: var(--soleil);
+  box-shadow: 2px 2px 0 var(--encre);
+  pointer-events: none;
+}
+
+.curseur {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.curseur input {
+  width: 100%;
+  min-height: 44px;
+  accent-color: var(--violet);
+}
+
+.bornes {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--encre-douce);
+}
+
+/* Pari */
+
+.sous-question {
+  margin: 4px 0 0;
+  font-weight: 700;
+}
+
+.certitudes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.case-certitude {
+  min-height: 52px;
+  border: var(--contour);
+  border-radius: var(--rayon-s);
+  background: var(--surface);
+  color: var(--encre);
+  font-weight: 700;
+}
+
+/* Questions du public */
+
+.liste-simple {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.liste-simple li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+
+.etat-question {
+  font-size: 0.85rem;
+  color: var(--encre-douce);
+}
+
+.etat-question.ok {
+  color: #0f766e;
+  font-weight: 700;
+}
+
+.option.vote {
+  min-height: 56px;
+  font-size: 1rem;
+}
+
+.compte-votes {
+  flex: 0 0 auto;
+  min-width: 52px;
+  padding: 4px 8px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-pilule);
+  background: var(--soleil);
+  text-align: center;
+}
+
+/* Signal discret (référence : barre en bas des maquettes Tel-*) */
+
+body {
+  padding-bottom: 96px;
+}
+
+.barre-signaux {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom));
+  border-radius: 24px 24px 0 0;
+  background: var(--encre);
+}
+
+.signal {
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 2px solid transparent;
+  border-radius: 18px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.signal .icone-signal {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--encre);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.signal[aria-pressed="true"] {
+  border-color: #fff;
+  background: var(--soleil);
+  color: var(--encre);
+}
+
+.signal[aria-pressed="true"] .icone-signal {
+  background: var(--encre);
+  color: #fff;
+}
+
+.signal:focus-visible {
+  outline: 3px solid var(--soleil);
+  outline-offset: 2px;
+}
+
+/* Page ouverte par la fenêtre de connexion Wi-Fi (portail captif) */
+
+.aide-portail {
+  margin: 4px 20px 0;
+  padding: 10px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  background: #e6fbf5;
+  font-size: 0.9rem;
+}

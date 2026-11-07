@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Projection : nuage de mots</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Lexend:wght@400;500;700&display=swap">
+<style>
+body{margin:0}
+a{color:#6C3BFF}a:hover{color:#4A1FD1}
+</style>
+</helmet>
+<div style="width: 1280px; height: 720px; box-sizing: border-box; padding: 30px 48px 26px; background: #F6F3FF; color: #1B1530; font-family: 'Lexend', system-ui, sans-serif; display: flex; flex-direction: column; gap: 16px">
+  <header style="display: flex; align-items: flex-end; justify-content: space-between; gap: 24px">
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <span style="align-self: flex-start; padding: 4px 14px; border-radius: 999px; background: #FF7AC6; border: 2px solid #1B1530; font-size: 17px; font-weight: 700">Nuage de mots</span>
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 42px; line-height: 1.05; font-weight: 800; letter-spacing: -1px">En un mot : c'est quoi, une bonne réunion ?</h1>
+    </div>
+    <div style="flex: 0 0 auto; display: flex; gap: 10px">
+      <span style="padding: 8px 16px; border-radius: 16px; background: #FFFFFF; border: 2px solid #1B1530; font-size: 18px"><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px">29</strong> participants</span>
+      <span style="padding: 8px 16px; border-radius: 16px; background: #FFD23F; border: 2px solid #1B1530; font-size: 18px"><strong style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px">{{total}}</strong> mots</span>
+    </div>
+  </header>
+
+  <div style="position: relative; flex: 1 1 auto; border-radius: 32px; background: #FFFFFF; border: 3px solid #1B1530; box-shadow: 6px 6px 0 #1B1530; overflow: hidden">
+    <div style="position: absolute; left: 6px; top: 4px; width: 1180px; height: 500px">
+      <sc-for list="{{words}}" as="w" hint-placeholder-count="16">
+        <span style="position: absolute; left: {{w.x}}px; top: {{w.y}}px; transform: translate(-50%, -50%) scale({{w.scale}}); white-space: nowrap; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; letter-spacing: -0.02em; line-height: 1; font-size: {{w.size}}px; color: {{w.color}}; transition: font-size 450ms cubic-bezier(.34,1.56,.64,1), transform 450ms cubic-bezier(.34,1.56,.64,1)">{{w.text}}</span>
+      </sc-for>
+    </div>
+  </div>
+
+  <footer style="display: flex; justify-content: space-between; gap: 24px; font-size: 17px; color: #5B5570">
+    <span>Les mots proches sont regroupés (réunion, réunions). Un mot posé ne bouge plus : il grossit.</span>
+    <span>Anonyme · affiché à partir de 3 participants</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.base = [14, 9, 8, 7, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 2, 2];
+    this.state = { counts: this.base.slice(), last: -1, tick: 0 };
+  }
+  componentDidMount() {
+    const seq = [14, 13, 10, 12, 8, 15, 14, 9, 13, 10];
+    this._iv = setInterval(() => {
+      const t = this.state.tick;
+      if (t >= seq.length) {
+        this.setState({ counts: this.base.slice(), last: -1, tick: 0 });
+        return;
+      }
+      const i = seq[t];
+      const c = this.state.counts.slice();
+      c[i] += 1;
+      this.setState({ counts: c, last: i, tick: t + 1 });
+    }, 1400);
+  }
+  componentWillUnmount() {
+    clearInterval(this._iv);
+  }
+  renderVals() {
+    const s = this.state;
+    const words = [
+      { text: 'écoute', x: 584, y: 236, color: '#6C3BFF' },
+      { text: 'respect', x: 300, y: 146, color: '#1B1530' },
+      { text: 'utile', x: 880, y: 146, color: '#E2401E' },
+      { text: 'courte', x: 900, y: 326, color: '#0E8F72' },
+      { text: 'décision', x: 290, y: 326, color: '#D63AA0' },
+      { text: 'ordre du jour', x: 600, y: 398, color: '#1E7FD6' },
+      { text: 'participation', x: 620, y: 70, color: '#0E8F72' },
+      { text: 'convivialité', x: 975, y: 446, color: '#6C3BFF' },
+      { text: 'clarté', x: 150, y: 236, color: '#E2401E' },
+      { text: 'ponctualité', x: 230, y: 446, color: '#1B1530' },
+      { text: 'café', x: 1080, y: 236, color: '#D63AA0' },
+      { text: 'bienveillance', x: 1000, y: 40, color: '#1E7FD6' },
+      { text: 'concrète', x: 130, y: 60, color: '#6C3BFF' },
+      { text: 'rythme', x: 848, y: 236, color: '#1B1530' },
+      { text: 'humour', x: 350, y: 236, color: '#0E8F72' },
+      { text: 'confiance', x: 600, y: 466, color: '#E2401E' }
+    ];
+    const total = s.counts.reduce((a, b) => a + b, 0);
+    return {
+      total,
+      words: words.map((w, i) => ({
+        text: w.text,
+        x: w.x,
+        y: w.y,
+        color: w.color,
+        size: Math.round(6 + 24 * Math.sqrt(s.counts[i])),
+        scale: s.last === i ? 1.12 : 1
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

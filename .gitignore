@@ -1,0 +1,16 @@
+# Compilation
+/target/
+
+# Réglages personnels de Claude Code
+CLAUDE.local.md
+.claude/settings.local.json
+
+# Journaux et exports de séances réelles (données de participants)
+*.jsonl
+/seances/
+/exports/
+
+# Éditeurs et système
+.idea/
+*.swp
+.DS_Store

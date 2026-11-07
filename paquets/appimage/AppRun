@@ -1,0 +1,27 @@
+#!/bin/sh
+# Lanceur de l'AppImage Padaone.
+# - Depuis un terminal, ou avec des arguments : se comporte exactement comme `padaone`
+#   (par exemple `./Padaone.AppImage point-acces diag`).
+# - Par double-clic : ouvre un terminal (pour voir les liens et arrêter avec Ctrl+C)
+#   et la console dans le navigateur.
+ICI="$(dirname "$(readlink -f "$0")")"
+BIN="$ICI/usr/bin/padaone"
+
+if [ $# -gt 0 ] || [ -t 1 ]; then
+  exec "$BIN" "$@"
+fi
+
+SOI="${APPIMAGE:-$0}"
+COMMANDE="\"$SOI\" --ouvrir-console; echo; printf 'Padaone est arrêté. Entrée pour fermer cette fenêtre. '; read rien"
+for terminal in gnome-terminal konsole xfce4-terminal mate-terminal tilix x-terminal-emulator xterm; do
+  if command -v "$terminal" > /dev/null 2>&1; then
+    case "$terminal" in
+      gnome-terminal | mate-terminal | tilix) exec "$terminal" --title=Padaone -- sh -c "$COMMANDE" ;;
+      konsole) exec konsole -p tabtitle=Padaone -e sh -c "$COMMANDE" ;;
+      *) exec "$terminal" -T Padaone -e sh -c "$COMMANDE" ;;
+    esac
+  fi
+done
+
+# Aucun terminal : on lance quand même, la console s'ouvre dans le navigateur.
+exec "$BIN" --ouvrir-console

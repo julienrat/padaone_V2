@@ -1,0 +1,45 @@
+[workspace]
+resolver = "2"
+members = ["crates/padaone-core", "crates/padaone-net", "crates/padaone"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "AGPL-3.0-or-later"
+rust-version = "1.85"
+authors = ["Julien"]
+repository = ""
+
+# Dépendances prévues pour la phase 1 (voir CLAUDE.md et docs/03-specification.md).
+# Elles ne sont téléchargées que lorsqu'un crate du workspace les utilise :
+# dans un crate, écrire par exemple `tokio = { workspace = true }`.
+# Vérifier les versions récentes avec `cargo search <nom>` avant de les activer.
+[workspace.dependencies]
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["ws"] }
+tower-http = { version = "0.7", features = ["trace"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rust-embed = { version = "8", features = ["mime-guess", "include-exclude"] }
+qrcode = { version = "0.14", default-features = false, features = ["svg"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4", features = ["derive"] }
+thiserror = "2"
+anyhow = "1"
+# Hasard du système (code de séance, jetons, clé secrète), sans appel réseau.
+getrandom = "0.4"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "warn"
+expect_used = "warn"
+dbg_macro = "warn"
+todo = "warn"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true

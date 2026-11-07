@@ -1,0 +1,666 @@
+/* Console de l'animateur (référence : docs/maquettes/Console.dc.html). */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding: 14px 24px;
+  background: var(--encre);
+  color: #fff;
+}
+
+.marque {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.marque .nom {
+  font-family: var(--police-titre);
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.marque .titre {
+  font-size: 15px;
+  color: #d9d3ee;
+}
+
+.pastilles {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.pilule {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: var(--rayon-pilule);
+  color: var(--encre);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pilule.menthe {
+  background: var(--menthe);
+}
+
+.pilule.soleil {
+  background: var(--soleil);
+}
+
+.pilule.blanc {
+  background: #fff;
+}
+
+a.pilule:focus-visible,
+.b:focus-visible,
+.champ:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 2px;
+}
+
+.alerte {
+  margin: 12px 24px 0;
+  padding: 10px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  background: var(--peche);
+  font-weight: 700;
+}
+
+.disposition {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 24px 24px;
+  align-items: flex-start;
+}
+
+.panneau {
+  border-radius: 24px;
+  background: var(--surface);
+  border: var(--contour);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.h2 {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.b {
+  min-height: 48px;
+  padding: 0 16px;
+  border-radius: 16px;
+  border: var(--contour);
+  background: #fff;
+  color: var(--encre);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.b.violet {
+  background: var(--violet);
+  color: #fff;
+  box-shadow: 3px 3px 0 var(--encre);
+}
+
+.b.encre {
+  background: var(--encre);
+  color: #fff;
+}
+
+.b.petit {
+  min-height: 44px;
+  padding: 0 10px;
+  font-size: 13px;
+}
+
+.b[aria-pressed="true"] {
+  background: var(--soleil);
+  color: var(--encre);
+}
+
+.b:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Déroulé */
+
+.deroule {
+  flex: 1 1 260px;
+  max-width: 340px;
+}
+
+.etapes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.etape {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  border: 2px solid var(--lilas);
+}
+
+.etape.en-cours {
+  border-color: var(--encre);
+  background: var(--lilas);
+}
+
+.etape .nom-etape {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.etape .note {
+  font-size: 12px;
+  color: var(--encre-douce);
+}
+
+.etape .boutons {
+  display: flex;
+  gap: 6px;
+}
+
+.vide {
+  margin: 0;
+  font-size: 14px;
+  color: var(--encre-douce);
+}
+
+.nouveau {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--lilas);
+}
+
+label,
+legend {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.champ {
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: var(--rayon-s);
+  border: 2px solid var(--encre);
+  background: #fff;
+  color: var(--encre);
+  font: inherit;
+  font-size: 15px;
+}
+
+.champs-options {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ligne-option {
+  display: flex;
+  gap: 6px;
+}
+
+.ligne-option .b {
+  flex: 0 0 auto;
+  width: 44px;
+  padding: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Activité en cours */
+
+.principal {
+  flex: 999 1 480px;
+  min-width: 0;
+  gap: 14px;
+  padding: 20px;
+  box-shadow: var(--ombre-forte);
+}
+
+.ligne-haut {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ligne-haut .pastille {
+  background: var(--soleil);
+  font-size: 14px;
+}
+
+.petit {
+  margin: 0;
+  font-size: 14px;
+  color: var(--encre-douce);
+  overflow-wrap: anywhere;
+}
+
+.principal h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.statut-ecran {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 2px solid var(--encre);
+  font-size: 15px;
+}
+
+.statut-ecran.visible {
+  background: #e6fbf5;
+}
+
+.statut-ecran.masque {
+  background: var(--fond);
+}
+
+.resultats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.resultat {
+  display: grid;
+  grid-template-columns: minmax(120px, 220px) 1fr 70px;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+}
+
+.resultat .libelle {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.resultat .piste {
+  height: 24px;
+  border: 2px solid var(--encre);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.resultat .remplissage {
+  display: block;
+  height: 100%;
+}
+
+.resultat .nombre {
+  font-family: var(--police-titre);
+  font-size: 20px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.commandes {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.commandes .pousse {
+  margin-left: auto;
+}
+
+/* Côté */
+
+.cote {
+  flex: 1 1 260px;
+  max-width: 330px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.qr {
+  width: 100%;
+  max-width: 220px;
+  aspect-ratio: 1;
+}
+
+.qr svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.renommer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Formulaire de création */
+
+.champs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+select.champ {
+  appearance: auto;
+}
+
+.liste-options {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ligne-option {
+  align-items: center;
+}
+
+.radio-bonne {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  margin: 10px;
+  accent-color: var(--violet);
+}
+
+.ligne-option .champ {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Détail de l'activité en cours */
+
+.detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.h3 {
+  margin: 4px 0 0;
+  font-size: 17px;
+}
+
+.chiffres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+}
+
+.chiffres div {
+  padding: 8px 14px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  background: var(--fond);
+}
+
+.chiffres dt {
+  font-size: 13px;
+  color: var(--encre-douce);
+}
+
+.chiffres dd {
+  margin: 0;
+  font-family: var(--police-titre);
+  font-size: 24px;
+  font-weight: 800;
+}
+
+/* Modération des mots */
+
+.mots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mots .mot {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  border: 2px solid var(--encre);
+  border-radius: 22px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.mots .mot.masque {
+  background: var(--fond);
+}
+
+.mots .mot.masque .mot-texte {
+  text-decoration: line-through;
+}
+
+.mot-texte,
+.mot-oeil,
+.mot-separer {
+  min-height: 44px;
+  border: 0;
+  background: transparent;
+  color: var(--encre);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.mot-texte {
+  padding: 0 10px 0 14px;
+}
+
+.mot-texte[aria-pressed="true"] {
+  background: var(--soleil);
+}
+
+.mot-texte .n,
+.etat-masque {
+  font-weight: 400;
+  color: var(--encre-douce);
+}
+
+.mot-oeil {
+  width: 44px;
+  border-left: 2px solid var(--encre);
+  font-size: 18px;
+}
+
+.mot-oeil[aria-pressed="true"] {
+  background: var(--encre);
+  color: #fff;
+}
+
+.mot-separer {
+  padding: 0 10px;
+  border-left: 2px dashed var(--encre);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.bandeau-fusion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 2px solid var(--encre);
+  border-radius: 16px;
+  background: #ffe58a;
+  font-size: 15px;
+}
+
+/* Messages et questions à valider */
+
+.liste-moderee {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.liste-moderee li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 14px;
+  border: 2px solid var(--lilas);
+  border-radius: 16px;
+}
+
+.liste-moderee li.valide {
+  border-color: var(--encre);
+  background: #e6fbf5;
+}
+
+.texte-modere {
+  flex: 1 1 auto;
+  overflow-wrap: anywhere;
+}
+
+.liste-moderee .votes {
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+
+/* Signal discret */
+
+.titre-ligne {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.signaux {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.signaux .signal {
+  display: grid;
+  grid-template-columns: 14px 1fr 80px 28px;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.pastille-signal {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--encre);
+  border-radius: 50%;
+  background: var(--menthe);
+}
+
+.signal.en-alerte .pastille-signal {
+  background: var(--corail);
+}
+
+.signal.en-alerte .nom-signal {
+  font-weight: 800;
+}
+
+.jauge {
+  height: 10px;
+  border: 2px solid var(--encre);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.jauge span {
+  display: block;
+  height: 100%;
+  background: var(--violet);
+}
+
+.signaux strong {
+  font-family: var(--police-titre);
+  font-size: 20px;
+  text-align: right;
+}
+
+.alerte-signal {
+  margin: 0;
+  padding: 10px 12px;
+  border: 2px solid var(--encre);
+  border-radius: 14px;
+  background: var(--rose);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

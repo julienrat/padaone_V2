@@ -1,0 +1,30 @@
+[package]
+name = "padaone"
+description = "Padaone : les smartphones deviennent des outils de participation, résultats au vidéoprojecteur."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+default-run = "padaone"
+
+[[bin]]
+name = "padaone"
+path = "src/main.rs"
+
+[dependencies]
+padaone-core = { path = "../padaone-core" }
+padaone-net = { path = "../padaone-net" }
+tokio = { workspace = true }
+axum = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+rust-embed = { workspace = true }
+qrcode = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+getrandom = { workspace = true }
+
+[lints]
+workspace = true

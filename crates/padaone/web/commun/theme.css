@@ -1,0 +1,128 @@
+/*
+ * Jetons de design de Padaone (direction V2 « jeune »).
+ * Source de vérité pour les trois interfaces : téléphone (p/), projection (ecran/), console (console/).
+ * Maquettes de référence : docs/maquettes/.
+ *
+ * Polices : Bricolage Grotesque (titres) et Lexend (texte), licence SIL OFL.
+ * Les fichiers woff2 doivent être placés dans web/commun/polices/ (aucun CDN : la salle n'a pas forcément internet).
+ */
+
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("polices/BricolageGrotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Lexend";
+  src: url("polices/Lexend.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  /* Couleurs */
+  --encre: #1b1530;          /* texte, contours, ombres */
+  --encre-douce: #5b5570;    /* texte secondaire (contraste 6,5:1 sur le fond) */
+  --fond: #f6f3ff;           /* fond lilas */
+  --surface: #ffffff;        /* cartes */
+  --violet: #6c3bff;         /* action principale, texte blanc dessus */
+  --violet-fonce: #4a1fd1;
+  --lilas: #e4daff;
+  --corail: #ff6b4a;         /* alerte douce, « contre », texte encre dessus */
+  --peche: #ffe1d6;
+  --soleil: #ffd23f;         /* mise en avant, texte encre dessus */
+  --menthe: #2dd4a7;         /* succès, « pour », texte encre dessus */
+  --rose: #ff7ac6;
+  --ciel: #49a8ff;
+
+  /* Mentions du jugement majoritaire, de « à rejeter » à « excellent » */
+  --mention-0: #d9381e;
+  --mention-1: #ff8a5b;
+  --mention-2: #ede8fa;
+  --mention-3: #b9a6ff;
+  --mention-4: #7c4dff;
+  --mention-5: #4a1fd1;
+
+  /* Formes */
+  --contour: 3px solid var(--encre);
+  --ombre: 4px 4px 0 var(--encre);
+  --ombre-forte: 6px 6px 0 var(--encre);
+  --rayon-s: 14px;
+  --rayon-m: 20px;
+  --rayon-l: 28px;
+  --rayon-pilule: 999px;
+
+  /* Typographie */
+  --police-titre: "Bricolage Grotesque", "Lexend", system-ui, sans-serif;
+  --police-texte: "Lexend", system-ui, sans-serif;
+
+  /* Accessibilité */
+  --cible-min: 44px;         /* taille minimale d'une cible tactile */
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Un élément masqué le reste, même si sa classe lui donne un affichage (flex, grid…). */
+[hidden] {
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--encre);
+  font-family: var(--police-texte);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--police-titre);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+button {
+  font: inherit;
+  min-height: var(--cible-min);
+  cursor: pointer;
+}
+
+.bouton-principal {
+  border: var(--contour);
+  border-radius: var(--rayon-m);
+  background: var(--violet);
+  color: #fff;
+  box-shadow: var(--ombre);
+  font-family: var(--police-titre);
+  font-weight: 800;
+}
+
+.carte {
+  border: var(--contour);
+  border-radius: var(--rayon-l);
+  background: var(--surface);
+}
+
+.pastille {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-pilule);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

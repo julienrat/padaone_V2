@@ -1,0 +1,44 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Padaone : compiler",
+      "type": "shell",
+      "command": "cargo build",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$rustc"]
+    },
+    {
+      "label": "Padaone : tester",
+      "type": "shell",
+      "command": "cargo test --workspace",
+      "group": { "kind": "test", "isDefault": true },
+      "problemMatcher": ["$rustc"]
+    },
+    {
+      "label": "Padaone : vérifier (fmt + clippy + tests)",
+      "type": "shell",
+      "command": "cargo fmt --all -- --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace",
+      "problemMatcher": ["$rustc"]
+    },
+    {
+      "label": "Padaone : lancer",
+      "type": "shell",
+      "command": "cargo run -p padaone",
+      "isBackground": false,
+      "problemMatcher": []
+    },
+    {
+      "label": "Padaone : diagnostic Wi-Fi (lecture seule)",
+      "type": "shell",
+      "command": "nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device status && for d in $(nmcli -t -f DEVICE,TYPE device status | awk -F: '$2==\"wifi\"{print $1}'); do echo \"--- $d\"; nmcli -f WIFI-PROPERTIES device show \"$d\"; done",
+      "problemMatcher": []
+    },
+    {
+      "label": "Padaone : nettoyer (libère de la place disque)",
+      "type": "shell",
+      "command": "cargo clean",
+      "problemMatcher": []
+    }
+  ]
+}

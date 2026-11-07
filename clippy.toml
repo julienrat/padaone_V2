@@ -1,0 +1,3 @@
+# CLAUDE.md : unwrap() et expect() sont permis dans les tests (interdits ailleurs).
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true

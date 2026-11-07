@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Padaone · point d'accès</title>
+  <link rel="stylesheet" href="/commun/theme.css">
+  <link rel="stylesheet" href="/console/style.css">
+  <link rel="stylesheet" href="/console/reseau.css">
+  <script type="module" src="/console/reseau.js"></script>
+</head>
+<body>
+  <header class="entete">
+    <a class="pilule blanc" id="retour">← Retour à la console</a>
+    <span class="marque-texte">Padaone · réseau</span>
+  </header>
+
+  <div class="haut-reseau">
+    <div class="titre-statut">
+      <h1>Point d'accès Wi-Fi</h1>
+      <span class="statut-ap" id="statut" role="status"></span>
+    </div>
+    <button type="button" class="b violet gros" id="principal-ap" disabled>Démarrer</button>
+  </div>
+
+  <p class="bandeau-simule" id="simule" hidden>Mode simulé : rien n'est modifié sur ce PC. Lancez Padaone sans <code>--reseau-simule</code> pour le vrai point d'accès.</p>
+  <p class="message-ap" id="message" role="status" hidden></p>
+
+  <div class="grille-reseau">
+    <form class="panneau reglages" id="reglages" aria-label="Réglages du point d'accès">
+      <fieldset class="fs">
+        <legend>Carte Wi-Fi</legend>
+        <div id="cartes" class="cartes"><p class="petit">Diagnostic en cours…</p></div>
+      </fieldset>
+
+      <fieldset class="fs">
+        <legend>Réseau</legend>
+        <div class="deux-colonnes">
+          <div class="champ-groupe">
+            <label for="nom">Nom du réseau</label>
+            <input id="nom" class="champ" maxlength="32" autocomplete="off" required>
+          </div>
+          <div class="champ-groupe">
+            <label for="mdp">Mot de passe</label>
+            <div class="ligne-champ">
+              <input id="mdp" class="champ" maxlength="63" autocomplete="off" required>
+              <button type="button" class="b" id="generer">Générer</button>
+            </div>
+          </div>
+        </div>
+        <div class="trois-colonnes">
+          <div class="champ-groupe">
+            <span class="libelle" id="lib-securite">Sécurité</span>
+            <div class="bascule" role="group" aria-labelledby="lib-securite" id="securite">
+              <button type="button" class="b" data-valeur="wpa2" aria-pressed="true">WPA2</button>
+              <button type="button" class="b" data-valeur="ouvert" aria-pressed="false">Ouvert</button>
+            </div>
+          </div>
+          <div class="champ-groupe">
+            <span class="libelle" id="lib-bande">Bande</span>
+            <div class="bascule" role="group" aria-labelledby="lib-bande" id="bande">
+              <button type="button" class="b" data-valeur="auto" aria-pressed="true">Auto</button>
+              <button type="button" class="b" data-valeur="ghz2_4" aria-pressed="false">2,4 GHz</button>
+              <button type="button" class="b" data-valeur="ghz5" aria-pressed="false">5 GHz</button>
+            </div>
+          </div>
+          <div class="champ-groupe">
+            <label for="canal">Canal</label>
+            <select id="canal" class="champ"></select>
+          </div>
+        </div>
+        <p class="avertissement" id="avert-ouvert" hidden>Réseau ouvert : toute personne à portée peut s'y connecter. Le code de séance reste nécessaire pour participer.</p>
+      </fieldset>
+
+      <fieldset class="fs">
+        <legend>Adresse du PC sur le point d'accès</legend>
+        <label class="opt"><input type="radio" name="adresse" value="garder" checked>
+          <span id="lib-garder"><strong>Garder l'adresse actuelle</strong> · bascule sans coupure : les pages ouvertes se reconnectent seules</span></label>
+        <label class="opt"><input type="radio" name="adresse" value="par_defaut">
+          <span><strong>10.42.0.1</strong> · valeur par défaut de NetworkManager (les téléphones devront rescanner le QR code)</span></label>
+        <div class="champ-groupe">
+          <label for="portail">Portail captif</label>
+          <select id="portail" class="champ" aria-describedby="aide-portail">
+            <option value="ouvrir">Ouvrir la page de la séance à la connexion</option>
+            <option value="silencieux">Silencieux (pas de page, « connexion limitée » sur Android)</option>
+            <option value="desactive">Désactivé (les téléphones diront « sans internet »)</option>
+          </select>
+          <p class="petit" id="aide-portail"></p>
+        </div>
+        <label class="opt"><input type="checkbox" id="arret-fin">
+          <span>Arrêter le point d'accès quand Padaone s'arrête, et revenir au Wi-Fi précédent</span></label>
+      </fieldset>
+
+      <fieldset class="fs">
+        <legend>Capteurs des téléphones (HTTPS)</legend>
+        <p class="petit">Le micro et les mouvements ne marchent qu'en HTTPS. Le certificat Padaone arrive en phase 4 ; en attendant, les téléphones utilisent des boutons.</p>
+      </fieldset>
+    </form>
+
+    <aside class="cote-reseau">
+      <section class="panneau">
+        <div class="titre-ligne"><h2 class="h2">Diagnostic</h2>
+          <button type="button" class="b petit" id="rediagnostiquer">Relancer</button></div>
+        <ul class="constats" id="constats" role="list"></ul>
+      </section>
+
+      <section class="panneau" id="actif" hidden>
+        <p class="appareils"><strong id="nb-appareils">0</strong> <span id="lib-appareils">appareil sur le réseau Padaone</span></p>
+        <p class="petit" id="adresse-actif"></p>
+      </section>
+
+      <section class="panneau">
+        <h2 class="h2">Ce que la salle verra</h2>
+        <div class="apercu">
+          <div class="qr" id="qr-wifi" role="img" aria-label="QR code Wi-Fi"></div>
+          <div class="infos-apercu">
+            <span class="petit">Réseau</span>
+            <strong id="apercu-nom"></strong>
+            <span class="petit" id="apercu-lib-mdp">Mot de passe</span>
+            <strong id="apercu-mdp" class="surligne"></strong>
+          </div>
+        </div>
+        <p class="petit" id="apercu-note">Le QR code Wi-Fi s'affiche une fois le point d'accès démarré.</p>
+      </section>
+
+      <section class="panneau">
+        <h2 class="h2">Droits administrateur</h2>
+        <p class="petit">Démarrer le point d'accès passe par NetworkManager, avec les droits de votre session (voir le diagnostic). Rien n'est demandé à Padaone en tant qu'administrateur.</p>
+        <p class="petit">Une seule installation demande <code>sudo</code> : le portail captif (DNS du point d'accès et port 80), qui donne aussi l'adresse simple <strong>padaone.lan</strong>. Les commandes à copier s'affichent avec :</p>
+        <pre class="commande"><code>padaone point-acces portail</code></pre>
+      </section>
+    </aside>
+  </div>
+</body>
+</html>

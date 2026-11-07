@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Padaone · écran</title>
+  <link rel="stylesheet" href="/commun/theme.css">
+  <link rel="stylesheet" href="/ecran/style.css">
+  <script type="module" src="/ecran/app.js"></script>
+</head>
+<body>
+  <!-- Scène fixe de 1280 × 720, mise à l'échelle de la fenêtre. -->
+  <div class="scene" id="scene">
+    <svg class="decor" width="1280" height="720" viewBox="0 0 1280 720" aria-hidden="true">
+      <circle cx="1210" cy="70" r="150" fill="#FFD23F"></circle>
+      <circle cx="40" cy="690" r="90" fill="#FF7AC6"></circle>
+      <path d="M610 40 q20 -24 40 0 t40 0 t40 0" fill="none" stroke="#2DD4A7" stroke-width="8" stroke-linecap="round"></path>
+      <path d="M1180 640 l10 22 l24 3 l-18 16 l5 24 l-21 -12 l-21 12 l5 -24 l-18 -16 l24 -3 z" fill="#6C3BFF"></path>
+    </svg>
+    <header class="entete">
+      <div class="marque" id="marque">
+        <span class="nom">Padaone</span>
+        <span class="titre" id="titre"></span>
+      </div>
+    </header>
+    <main class="contenu" id="contenu"></main>
+    <footer class="pied">
+      <p class="discret" id="pied-adresse"></p>
+      <div class="compteur" id="compteur" aria-live="polite"></div>
+    </footer>
+  </div>
+  <p class="hors-ligne" id="hors-ligne" role="status" hidden></p>
+</body>
+</html>

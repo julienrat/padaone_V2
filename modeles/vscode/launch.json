@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Déboguer padaone",
+      "cargo": {
+        "args": ["build", "--bin=padaone", "--package=padaone"],
+        "filter": { "name": "padaone", "kind": "bin" }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Déboguer les tests de padaone-core",
+      "cargo": {
+        "args": ["test", "--no-run", "--lib", "--package=padaone-core"],
+        "filter": { "name": "padaone_core", "kind": "lib" }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

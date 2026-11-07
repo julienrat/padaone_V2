@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Padaone · console</title>
+  <link rel="stylesheet" href="/commun/theme.css">
+  <link rel="stylesheet" href="/console/style.css">
+  <script type="module" src="/console/app.js"></script>
+</head>
+<body>
+  <header class="entete">
+    <div class="marque" id="marque">
+      <span class="nom">Padaone</span>
+      <span class="titre" id="titre"></span>
+    </div>
+    <div class="pastilles">
+      <span class="pilule menthe" id="code"></span>
+      <span class="pilule soleil" id="connectes" aria-live="polite"></span>
+      <a class="pilule blanc" id="lien-wifi">Wi-Fi : point d'accès</a>
+      <a class="pilule blanc" id="lien-ecran" target="_blank" rel="noopener">Ouvrir l'écran</a>
+    </div>
+  </header>
+
+  <p class="alerte" id="alerte" role="alert" hidden></p>
+
+  <div class="disposition">
+    <nav class="panneau deroule" aria-labelledby="titre-deroule">
+      <h2 class="h2" id="titre-deroule">Déroulé</h2>
+      <ol class="etapes" id="etapes"></ol>
+      <button type="button" class="b" id="accueil">Projeter l'accueil</button>
+
+      <form class="nouveau" id="nouveau">
+        <h2 class="h2">Nouvelle activité</h2>
+        <label for="type">Type</label>
+        <select id="type" class="champ">
+          <option value="sondage">Sondage</option>
+          <option value="nuage">Nuage de mots</option>
+          <option value="echelle">Échelle</option>
+          <option value="meteo">Météo à deux axes</option>
+          <option value="pari">Pari de certitude</option>
+          <option value="cartons">Cartons de couleur</option>
+          <option value="ouverte">Question ouverte modérée</option>
+          <option value="questions">Questions du public</option>
+          <option value="roti">ROTI et mot de la fin</option>
+        </select>
+        <div class="champs" id="champs"></div>
+        <button type="submit" class="b violet">Ajouter au déroulé</button>
+      </form>
+    </nav>
+
+    <main class="panneau principal" id="principal"></main>
+
+    <aside class="cote">
+      <section class="panneau" aria-labelledby="titre-signaux">
+        <div class="titre-ligne"><h2 class="h2" id="titre-signaux">Signal discret</h2><span class="petit">non projeté</span></div>
+        <ul class="signaux" id="signaux" role="list"></ul>
+        <p class="alerte-signal" id="alerte-signal" role="alert" hidden></p>
+      </section>
+      <section class="panneau" aria-labelledby="titre-rejoindre">
+        <h2 class="h2" id="titre-rejoindre">Rejoindre</h2>
+        <div class="qr" id="qr" role="img" aria-label="QR code de la séance"></div>
+        <p class="petit" id="adresse"></p>
+      </section>
+      <section class="panneau" aria-labelledby="titre-seance">
+        <h2 class="h2" id="titre-seance">Séance</h2>
+        <form class="renommer" id="renommer">
+          <label for="nouveau-titre">Titre affiché</label>
+          <input id="nouveau-titre" class="champ" maxlength="80" required autocomplete="off">
+          <button type="submit" class="b">Renommer</button>
+        </form>
+        <p class="petit" id="inscrits"></p>
+      </section>
+    </aside>
+  </div>
+</body>
+</html>

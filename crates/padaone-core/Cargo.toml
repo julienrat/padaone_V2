@@ -1,0 +1,17 @@
+[package]
+name = "padaone-core"
+description = "Domaine de Padaone : séance, activités, agrégation des réponses. Aucune entrée/sortie."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

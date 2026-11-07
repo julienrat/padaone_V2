@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Padaone
+GenericName=Participation par smartphone
+Comment=Les téléphones des participants deviennent des outils de participation, résultats au vidéoprojecteur
+Exec=padaone
+Icon=padaone
+Terminal=false
+Categories=Education;Office;
+Keywords=formation;sondage;nuage de mots;réunion;vote;

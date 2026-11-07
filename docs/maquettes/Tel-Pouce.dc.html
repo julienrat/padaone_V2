@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Téléphone : pouce en l'air</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Lexend:wght@400;500;700&display=swap">
+<style>
+body{margin:0}
+a{color:#6C3BFF}a:hover{color:#4A1FD1}
+.sig{min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:18px;background:transparent;font:inherit;font-size:12px;color:#FFFFFF;cursor:pointer}
+.ic{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F6F3FF; color: #1B1530; font-family: 'Lexend', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 8px">
+    <span style="padding: 4px 12px; border-radius: 999px; background: #2DD4A7; border: 2px solid #1B1530; font-size: 14px; font-weight: 700">Pouce en l'air</span>
+    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.4; stroke-linecap: round"><rect x="7" y="2" width="10" height="20" rx="2.5"></rect><path d="M3 8c-1 2-1 6 0 8"></path><path d="M21 8c1 2 1 6 0 8"></path></svg>Mouvement actif</span>
+  </header>
+
+  <main style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 12px; padding: 4px 20px 12px; min-height: 0">
+    <p style="margin: 0; font-size: 16px; line-height: 1.35"><strong>On déplace la réunion au mardi soir ?</strong> Levez votre téléphone, écran vers la salle.</p>
+
+    <div role="status" aria-live="polite" style="flex: 1 1 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; border-radius: 32px; border: 4px solid #1B1530; box-shadow: 6px 6px 0 #1B1530; background: {{cardBg}}; transition: background 250ms">
+      <svg width="170" height="170" viewBox="0 0 24 24" aria-hidden="true" style="transform: rotate({{rot}}deg); transition: transform 450ms cubic-bezier(.34,1.56,.64,1)"><path d="M7 10v11H4.5A1.5 1.5 0 0 1 3 19.5v-8A1.5 1.5 0 0 1 4.5 10H7z" fill="#FFFFFF" stroke="#1B1530" style="stroke-width: 1.4; stroke-linejoin: round"></path><path d="M7 10l3.6-6.6A2 2 0 0 1 14.3 4.6L13.5 9H19a2 2 0 0 1 2 2.4l-1.5 7.6A2.5 2.5 0 0 1 17 21H7z" fill="#FFFFFF" stroke="#1B1530" style="stroke-width: 1.4; stroke-linejoin: round"></path></svg>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; letter-spacing: -1px; line-height: 1">{{label}}</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 13px; font-weight: 700; color: #5B5570">DÉMO · simuler la position du téléphone</span>
+      <div role="group" aria-label="Position simulée" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{poses}}" as="p" hint-placeholder-count="3">
+          <button type="button" onClick="{{p.pick}}" aria-pressed="{{p.pressed}}" style="min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 16px; border: 3px solid #1B1530; background: {{p.bg}}; font: inherit; font-size: 13px; font-weight: 700; color: #1B1530; cursor: pointer">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="transform: rotate({{p.rot}}deg); stroke-width: 2.4"><rect x="7" y="2" width="10" height="20" rx="2.5"></rect><path d="M11 5h2"></path></svg>
+            {{p.name}}
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    <button type="button" style="min-height: 44px; border: 0; background: transparent; font: inherit; font-size: 15px; font-weight: 700; color: #4A1FD1; text-decoration: underline; cursor: pointer">Pas de capteur ? Voter avec des boutons</button>
+  </main>
+
+  <nav aria-label="Signal discret" style="margin: 0 12px 14px; padding: 6px; border-radius: 26px; background: #1B1530; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px">
+    <button type="button" class="sig"><span class="ic" style="background: #FFD23F"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"><path d="M4 6l7 6-7 6"></path><path d="M13 6l7 6-7 6"></path></svg></span>Trop vite</button>
+    <button type="button" class="sig"><span class="ic" style="background: #FF7AC6"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"><path d="M9 9a3 3 0 0 1 6 1c0 2-3 2.5-3 4.5"></path><path d="M12 18.5v.5"></path></svg></span>Perdu·e</button>
+    <button type="button" class="sig"><span class="ic" style="background: #2DD4A7"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"></path></svg></span>Un exemple</button>
+    <button type="button" class="sig"><span class="ic" style="background: #49A8FF"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round"><path d="M9 6v12"></path><path d="M15 6v12"></path></svg></span>Une pause</button>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { pose: 0 };
+  }
+  renderVals() {
+    const s = this.state;
+    const poses = [
+      { name: 'Debout', rot: 0, label: 'POUR', bg: '#2DD4A7', thumb: 0 },
+      { name: 'À plat', rot: 90, label: 'JE PASSE', bg: '#E4DAFF', thumb: 90 },
+      { name: 'Tête en bas', rot: 180, label: 'CONTRE', bg: '#FF6B4A', thumb: 180 }
+    ];
+    const cur = poses[s.pose];
+    return {
+      cardBg: cur.bg,
+      rot: cur.thumb,
+      label: cur.label,
+      poses: poses.map((p, i) => ({
+        name: p.name,
+        rot: p.rot,
+        pressed: s.pose === i ? 'true' : 'false',
+        bg: s.pose === i ? '#FFD23F' : '#FFFFFF',
+        pick: () => this.setState({ pose: i })
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Téléphone : rejoindre la séance</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Lexend:wght@400;500;700&display=swap">
+<style>
+body{margin:0}
+a{color:#6C3BFF}a:hover{color:#4A1FD1}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F6F3FF; color: #1B1530; font-family: 'Lexend', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 6px">
+    <div style="display: flex; align-items: center; gap: 8px">
+      <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><circle cx="10" cy="10" r="7" fill="#6C3BFF"></circle><circle cx="23" cy="11" r="5" fill="#FF6B4A"></circle><circle cx="15" cy="23" r="6" fill="#2DD4A7"></circle></svg>
+      <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">Padaone</span>
+    </div>
+    <button type="button" aria-label="Agrandir le texte" style="min-width: 48px; min-height: 44px; border-radius: 14px; border: 2px solid #1B1530; background: #FFFFFF; font: inherit; font-size: 16px; font-weight: 700; color: #1B1530">Aa+</button>
+  </header>
+
+  <main style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 14px; padding: 6px 20px 22px">
+    <div>
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; line-height: 1; font-weight: 800; letter-spacing: -1px">Bienvenue !</h1>
+      <p style="margin: 6px 0 0; font-size: 16px; color: #5B5570">Animer des réunions participatives · jour 1</p>
+    </div>
+
+    <form style="display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 24px; background: #FFFFFF; border: 3px solid #1B1530">
+      <div style="display: flex; gap: 10px">
+        <div style="flex: 0 0 132px; display: flex; flex-direction: column; gap: 6px">
+          <label for="code" style="font-size: 14px; font-weight: 700">Code</label>
+          <input id="code" value="482 731" inputmode="numeric" style="height: 50px; width: 100%; box-sizing: border-box; padding: 0 10px; border-radius: 14px; border: 2px solid #1B1530; background: #2DD4A7; font: inherit; font-size: 20px; font-weight: 700; letter-spacing: 1px; color: #1B1530">
+        </div>
+        <div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 6px">
+          <label for="pseudo" style="font-size: 14px; font-weight: 700">Pseudo <span style="font-weight: 400; color: #5B5570">(facultatif)</span></label>
+          <input id="pseudo" placeholder="Anonyme" style="height: 50px; width: 100%; box-sizing: border-box; padding: 0 12px; border-radius: 14px; border: 2px solid #1B1530; background: #FFFFFF; font: inherit; font-size: 18px; color: #1B1530">
+        </div>
+      </div>
+      <span style="font-size: 14px; font-weight: 700">Votre couleur</span>
+      <div role="group" aria-label="Votre couleur" style="display: flex; justify-content: space-between">
+        <sc-for list="{{colors}}" as="c" hint-placeholder-count="6">
+          <button type="button" onClick="{{c.pick}}" aria-label="{{c.name}}" aria-pressed="{{c.pressed}}" style="width: 44px; height: 44px; border-radius: 50%; border: 3px solid #1B1530; background: {{c.hex}}; box-shadow: {{c.ring}}; cursor: pointer"></button>
+        </sc-for>
+      </div>
+    </form>
+
+    <section style="display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 24px; background: {{sensBg}}; border: 3px solid #1B1530; box-shadow: 5px 5px 0 #1B1530">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <span style="width: 40px; height: 40px; border-radius: 50%; background: #FFD23F; border: 2px solid #1B1530; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M5 11a7 7 0 0 0 14 0"></path><path d="M12 18v3"></path></svg></span>
+        <span style="width: 40px; height: 40px; border-radius: 50%; background: #FF7AC6; border: 2px solid #1B1530; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round"><rect x="7" y="2" width="10" height="20" rx="2.5"></rect><path d="M3 8c-1 2-1 6 0 8"></path><path d="M21 8c1 2 1 6 0 8"></path></svg></span>
+        <h2 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 21px; font-weight: 800">Micro et mouvements</h2>
+      </div>
+      <p style="margin: 0; font-size: 15px; line-height: 1.4">Pour applaudir et voter en levant le téléphone. Le son n'est jamais enregistré : seul un niveau part vers l'animateur.</p>
+      <button type="button" onClick="{{toggleSens}}" aria-pressed="{{sensPressed}}" style="min-height: 50px; border-radius: 16px; border: 3px solid #1B1530; background: {{sensBtnBg}}; color: {{sensBtnInk}}; font: inherit; font-size: 17px; font-weight: 700; cursor: pointer">{{sensLabel}}</button>
+      <span style="font-size: 13px; color: #5B5570">Refuser ne bloque rien : vous aurez des boutons à la place.</span>
+    </section>
+
+    <a href="Tel-Nuage.dc.html" style="margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 10px; height: 60px; border-radius: 20px; border: 3px solid #1B1530; background: #6C3BFF; color: #FFFFFF; box-shadow: 4px 4px 0 #1B1530; font-family: 'Bricolage Grotesque', sans-serif; font-size: 23px; font-weight: 800; text-decoration: none">C'est parti !</a>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { color: 0, sens: false };
+  }
+  renderVals() {
+    const s = this.state;
+    const colors = [
+      { name: 'Violet', hex: '#6C3BFF' },
+      { name: 'Corail', hex: '#FF6B4A' },
+      { name: 'Soleil', hex: '#FFD23F' },
+      { name: 'Menthe', hex: '#2DD4A7' },
+      { name: 'Rose', hex: '#FF7AC6' },
+      { name: 'Ciel', hex: '#49A8FF' }
+    ];
+    return {
+      colors: colors.map((c, i) => ({
+        name: c.name, hex: c.hex,
+        pressed: s.color === i ? 'true' : 'false',
+        ring: s.color === i ? '0 0 0 3px #F6F3FF, 0 0 0 6px #1B1530' : 'none',
+        pick: () => this.setState({ color: i })
+      })),
+      sensBg: s.sens ? '#E6FBF5' : '#FFFFFF',
+      sensBtnBg: s.sens ? '#2DD4A7' : '#1B1530',
+      sensBtnInk: s.sens ? '#1B1530' : '#FFFFFF',
+      sensLabel: s.sens ? 'Capteurs activés' : 'Activer les capteurs',
+      sensPressed: s.sens ? 'true' : 'false',
+      toggleSens: () => this.setState({ sens: !s.sens })
+    };
+  }
+}
+</script>
+</body>
+</html>

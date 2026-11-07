@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Téléphone : bascule sur le point d'accès</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Lexend:wght@400;500;700&display=swap">
+<style>
+body{margin:0}
+a{color:#6C3BFF}a:hover{color:#4A1FD1}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F6F3FF; color: #1B1530; font-family: 'Lexend', system-ui, sans-serif; display: flex; flex-direction: column">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 16px 20px 8px">
+    <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">Padaone</span>
+    <span style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: #FF6B4A; border: 2px solid #1B1530; font-size: 13px; font-weight: 700"><span style="width: 10px; height: 10px; border-radius: 50%; background: #1B1530"></span>Hors ligne</span>
+  </header>
+
+  <main style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 16px; padding: 10px 20px 24px">
+    <div style="display: flex; align-items: center; gap: 14px">
+      <span style="flex: 0 0 auto; width: 72px; height: 72px; border-radius: 24px; background: #FFD23F; border: 3px solid #1B1530; box-shadow: 4px 4px 0 #1B1530; display: flex; align-items: center; justify-content: center; transform: rotate(-6deg)"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1B1530" aria-hidden="true" style="stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round"><path d="M2 9a15 15 0 0 1 6.5-3.6"></path><path d="M13.5 5.2A15 15 0 0 1 22 9"></path><path d="M5.5 12.5a10 10 0 0 1 4-2.3"></path><path d="M9 16a5 5 0 0 1 6 0"></path><circle cx="12" cy="19.5" r="1" fill="#1B1530"></circle><path d="M3 3l18 18"></path></svg></span>
+      <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1; font-weight: 800; letter-spacing: -0.5px">Oups, on change de Wi-Fi !</h1>
+    </div>
+    <p style="margin: 0; font-size: 16px; line-height: 1.45">Pas de panique : vos réponses sont déjà à l'abri sur l'ordinateur de l'animateur.</p>
+
+    <ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px">
+      <li style="display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 22px; background: #FFFFFF; border: 3px solid #1B1530">
+        <span style="flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #6C3BFF; color: #FFFFFF; border: 2px solid #1B1530; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">1</span>
+        <span style="font-size: 16px; line-height: 1.35">Scannez le QR « Wi-Fi » affiché à l'écran</span>
+      </li>
+      <li style="display: flex; gap: 12px; align-items: flex-start; padding: 14px; border-radius: 22px; background: #FFFFFF; border: 3px solid #1B1530; box-shadow: 5px 5px 0 #1B1530">
+        <span style="flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #FF6B4A; border: 2px solid #1B1530; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">2</span>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 16px">ou choisissez ce réseau :</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800">Padaone-Tilleul</span>
+          <span style="align-self: flex-start; padding: 2px 10px; border-radius: 10px; background: #FFD23F; font-size: 20px; font-weight: 700">tilleul-42</span>
+        </div>
+      </li>
+      <li style="display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 22px; background: #FFFFFF; border: 3px solid #1B1530">
+        <span style="flex: 0 0 auto; width: 40px; height: 40px; border-radius: 50%; background: #2DD4A7; border: 2px solid #1B1530; display: flex; align-items: center; justify-content: center; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">3</span>
+        <span style="font-size: 16px; line-height: 1.35">Revenez ici : la page se reconnecte toute seule</span>
+      </li>
+    </ol>
+
+    <div style="margin-top: auto; display: flex; flex-direction: column; gap: 10px">
+      <p role="status" style="margin: 0; display: flex; align-items: center; gap: 10px; font-size: 15px; color: #5B5570"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5B5570" aria-hidden="true" style="stroke-width: 2.2; stroke-linecap: round"><path d="M21 12a9 9 0 1 1-3-6.7"></path><path d="M21 4v5h-5"></path></svg>Nouvel essai automatique dans 3 secondes</p>
+      <button type="button" style="min-height: 56px; border-radius: 20px; border: 3px solid #1B1530; background: #FFFFFF; color: #1B1530; box-shadow: 4px 4px 0 #1B1530; font-family: 'Bricolage Grotesque', sans-serif; font-size: 20px; font-weight: 800">Réessayer maintenant</button>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>
