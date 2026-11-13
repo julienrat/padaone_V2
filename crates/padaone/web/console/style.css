@@ -664,3 +664,99 @@ select.champ {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+/* Remise en ordre */
+
+.elements-ordre {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 0 18px;
+}
+
+.ligne-element {
+  display: grid;
+  grid-template-columns: 1fr 44px;
+  gap: 6px;
+}
+
+.ligne-element .champ-texte {
+  grid-column: 1;
+}
+
+.ligne-element .retirer {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 0;
+}
+
+.reglages-element {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.reglages-element select.champ {
+  width: auto;
+  flex: 1 1 100px;
+  font-size: 13px;
+}
+
+.apercu-ordre {
+  flex: 1 1 100%;
+}
+
+.case-minuterie {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+
+.case-minuterie input {
+  width: 22px;
+  height: 22px;
+  accent-color: var(--violet);
+}
+
+.duree {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.champ.court {
+  width: 76px;
+}
+
+.resultats-ordre {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+}
+
+.resultats-ordre li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.resultats-ordre .rang {
+  min-width: 24px;
+  font-weight: 800;
+}
+
+.commandes-minuterie {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}

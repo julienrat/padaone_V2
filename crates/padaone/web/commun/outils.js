@@ -73,6 +73,7 @@ export const NOMS_ACTIVITES = {
   roti: "ROTI",
   ouverte: "Question ouverte",
   questions: "Questions du public",
+  ordre: "Remise en ordre",
 };
 
 /** Degrés de certitude du pari, de 0 à 2. */
@@ -112,3 +113,95 @@ export function svg(balise, attributs = {}, ...enfants) {
   }
   return e;
 }
+
+/** Couleurs des éléments à remettre en ordre : fond, encre lisible dessus (contraste ≥ 4,5:1), nom. */
+export const COULEURS_ORDRE = {
+  violet: ["#6c3bff", "#ffffff", "Violet"],
+  corail: ["#ff6b4a", "#1b1530", "Corail"],
+  soleil: ["#ffd23f", "#1b1530", "Soleil"],
+  menthe: ["#2dd4a7", "#1b1530", "Menthe"],
+  rose: ["#ff7ac6", "#1b1530", "Rose"],
+  ciel: ["#49a8ff", "#1b1530", "Ciel"],
+  lilas: ["#e4daff", "#1b1530", "Lilas"],
+  peche: ["#ffe1d6", "#1b1530", "Pêche"],
+  blanc: ["#ffffff", "#1b1530", "Blanc"],
+  encre: ["#1b1530", "#ffffff", "Encre"],
+};
+
+/** Zone de texte d'un élément : rectangle arrondi, dans sa couleur (classe dans theme.css). */
+export function carteOrdre(element, classe = "") {
+  const [fond, encre] = COULEURS_ORDRE[element.couleur] ?? COULEURS_ORDRE.violet;
+  return el(
+    "span",
+    { class: `carte-ordre ${classe}`, style: { background: fond, color: encre } },
+    element.texte,
+  );
+}
+
+/** Pastille de la couleur d'un élément, sans texte (pour l'écran projeté). */
+export function iconeOrdre(element) {
+  const [fond] = COULEURS_ORDRE[element.couleur] ?? COULEURS_ORDRE.violet;
+  return el("span", {
+    class: "icone-ordre",
+    style: { background: fond },
+    "aria-hidden": "true",
+  });
+}
+
+// --- Minuterie -----------------------------------------------------------------
+// Le serveur envoie le temps restant ; chaque interface en déduit une échéance selon sa
+// propre horloge (les horloges des téléphones peuvent différer de celle du PC).
+
+let echeance = null;
+let activiteMinuterie = null;
+
+/** Durée lisible : 83 000 ms donne « 1:23 ». */
+export function formatDuree(ms) {
+  const s = Math.max(0, Math.ceil(ms / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+}
+
+/** Recale l'échéance à la réception d'une vue (`reste` absent : pas de minuterie). */
+export function reglerMinuterie(reste, activite) {
+  if (reste === undefined || reste === null) {
+    echeance = null;
+  } else {
+    const nouvelle = Date.now() + reste;
+    // On ne recale que si l'écart est sensible, pour éviter que l'affichage tressaute.
+    if (echeance === null || activite !== activiteMinuterie || Math.abs(nouvelle - echeance) > 1500) {
+      echeance = nouvelle;
+    }
+  }
+  activiteMinuterie = activite;
+  majMinuteries();
+}
+
+/** Temps restant selon l'horloge locale, ou `null` sans minuterie. */
+export function resteMinuterie() {
+  return echeance === null ? null : Math.max(0, echeance - Date.now());
+}
+
+/** Compte à rebours, mis à jour seul quatre fois par seconde. */
+export function elementMinuterie(classe = "") {
+  const e = el("span", { class: `minuterie ${classe}`, role: "timer", "aria-label": "Temps restant" });
+  majUne(e);
+  return e;
+}
+
+function majUne(e) {
+  const reste = resteMinuterie();
+  if (reste === null) {
+    e.hidden = true;
+    return;
+  }
+  e.hidden = false;
+  e.textContent = reste > 0 ? `⏱ ${formatDuree(reste)}` : "⏱ Temps écoulé";
+  e.classList.toggle("urgente", reste > 0 && reste <= 10_000);
+  e.classList.toggle("finie", reste === 0);
+}
+
+function majMinuteries() {
+  document.querySelectorAll(".minuterie").forEach(majUne);
+}
+
+setInterval(majMinuteries, 250);

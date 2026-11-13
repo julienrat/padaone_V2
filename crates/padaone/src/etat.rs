@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 use std::sync::{Arc, Mutex, MutexGuard};
 use std::time::{Duration, Instant};
 
-use padaone_core::{Evenement, IdParticipant, Seance};
+use padaone_core::{Commande, Evenement, IdParticipant, Seance};
 use tokio::sync::watch;
 
 use crate::journal::Journal;
@@ -125,7 +125,13 @@ impl Partage {
 
     /// Instant présent en millisecondes depuis le lancement (pour les signaux éphémères).
     pub fn maintenant(&self) -> u64 {
-        u64::try_from(self.debut.elapsed().as_millis()).unwrap_or(u64::MAX)
+        // Millisecondes depuis 1970 : l'heure de fin d'une minuterie, journalisée, reste valable
+        // après une reprise. `debut` sert de repli si l'horloge du système est avant 1970.
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map_or_else(|_| self.debut.elapsed().as_millis(), |d| d.as_millis())
+            .try_into()
+            .unwrap_or(u64::MAX)
     }
 
     /// Récepteur réveillé à chaque diffusion.
@@ -148,6 +154,14 @@ async fn diffuser(partage: Arc<Partage>) {
             let mut etat = partage.lire();
             if etat.seance.a_des_signaux() && etat.seance.purger_signaux(maintenant) {
                 partage.change.store(true, Ordering::Release);
+            }
+            // Minuteries échues : on fige l'activité (événement journalisé).
+            for id in etat.seance.minuteries_echues(maintenant) {
+                if let Ok(ev) = etat.seance.executer(Commande::Figer { id: Some(id), on: true }) {
+                    tracing::info!("minuterie échue : activité {id} figée");
+                    etat.journaliser(&ev);
+                    partage.change.store(true, Ordering::Release);
+                }
             }
         }
         if partage.change.swap(false, Ordering::AcqRel) {

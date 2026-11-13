@@ -73,4 +73,10 @@ pub enum Evenement {
         rang: Rang,
         on: bool,
     },
+    /// Minuterie démarrée (heure de fin en millisecondes depuis 1970, réponses rouvertes)
+    /// ou arrêtée (`fin` absente). À l'échéance, le serveur fige l'activité (événement `figee`).
+    MinuterieReglee {
+        id: IdActivite,
+        fin: Option<u64>,
+    },
 }

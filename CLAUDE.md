@@ -118,7 +118,7 @@ avant de les activer. Toute nouvelle dépendance se justifie dans le message de 
 
 Phase 0, prototypes de risque. Fait : serveur axum, pages embarquées, WebSocket avec le protocole v1,
 journal et reprise, et toutes les interactions V1 sans matériel (sondage, cartons, nuage, échelle, météo,
-pari, ROTI, question ouverte, questions du public, signal discret), point d'accès (diagnostic, démarrage,
+pari, ROTI, question ouverte, questions du public, remise en ordre avec minuterie, signal discret), point d'accès (diagnostic, démarrage,
 arrêt, page de la console, QR Wi-Fi à l'écran). Reste : premier essai réel du point d'accès par Julien,
 applaudimètre (micro du PC).
 Prochaine étape suggérée : sous-commande `padaone point-acces diag` (lecture seule), puis les robots

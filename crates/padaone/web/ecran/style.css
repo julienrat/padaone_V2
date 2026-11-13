@@ -825,3 +825,86 @@ body {
   font-size: 30px;
   font-weight: 700;
 }
+
+/* Minuterie et remise en ordre */
+
+.minuterie-ecran {
+  margin-left: auto;
+  padding: 6px 22px;
+  border-width: 3px;
+  font-family: var(--police-titre);
+  font-size: 40px;
+  box-shadow: var(--ombre);
+}
+
+.bilan-ordre {
+  margin: -6px 0 0;
+  font-size: 26px;
+}
+
+.bilan-ordre strong {
+  font-family: var(--police-titre);
+  font-size: 40px;
+}
+
+.bon-ordre {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 22px;
+}
+
+.bon-ordre.n7,
+.bon-ordre.n8 {
+  gap: 4px;
+  font-size: 18px;
+}
+
+.ligne-bon-ordre {
+  display: grid;
+  grid-template-columns: 44px 470px 1fr 170px;
+  align-items: center;
+  gap: 16px;
+}
+
+.texte-ordre {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.ligne-bon-ordre .piste {
+  height: 30px;
+}
+
+.rang-ordre {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--encre);
+  border-radius: 50%;
+  background: var(--lilas);
+  font-family: var(--police-titre);
+  font-weight: 800;
+}
+
+.part-ordre {
+  font-family: var(--police-titre);
+  font-size: 30px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.part-ordre small {
+  font-family: var(--police-texte);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--encre-douce);
+}

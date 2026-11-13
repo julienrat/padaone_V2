@@ -37,6 +37,7 @@ Durées estimées en semaines de travail à temps plein. Claude Code coche les c
 - [x] Signal discret
 - [x] ROTI et mot de la fin
 - [x] Cartons de couleur
+- [x] Remise en ordre (glisser-déposer, couleurs, minuterie)
 - [ ] Applaudimètre avec le micro du PC (crate cpal)
 - [ ] Export CSV des résultats
 - [ ] Polices embarquées (Bricolage Grotesque, Lexend)

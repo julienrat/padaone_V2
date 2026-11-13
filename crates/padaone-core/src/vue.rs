@@ -34,6 +34,9 @@ pub struct ActiviteParticipant {
     /// Vrai quand l'animateur a révélé le résultat (le pari montre alors la bonne réponse).
     pub revelee: bool,
     pub ma_reponse: Option<Reponse>,
+    /// Temps restant de la minuterie, en millisecondes (absent sans minuterie).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reste_ms: Option<u64>,
     /// Questions du public : questions validées à voter et état des siennes.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub donnees: Option<DonneesQuestions>,
@@ -55,6 +58,9 @@ pub struct ActiviteEcran {
     pub revelee: bool,
     pub figee: bool,
     pub reponses: usize,
+    /// Temps restant de la minuterie, en millisecondes (absent sans minuterie).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reste_ms: Option<u64>,
     /// Absent tant que l'activité n'est pas révélée ou compte moins de 3 réponses.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub resultat: Option<Resultat>,
@@ -79,6 +85,9 @@ pub struct EtapeConsole {
     pub revelee: bool,
     pub figee: bool,
     pub reponses: usize,
+    /// Temps restant de la minuterie, en millisecondes (absent sans minuterie).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub reste_ms: Option<u64>,
     /// Vrai si le résultat atteint le seuil d'anonymat et peut donc être projeté.
     pub affichable: bool,
     pub resultat: Resultat,
@@ -93,6 +102,7 @@ impl Seance {
             ouverte: !e.figee,
             revelee: e.revelee,
             ma_reponse: e.contenu.reponse_de(participant),
+            reste_ms: e.reste_ms(maintenant),
             donnees: e.contenu.donnees_participant(participant),
         });
         VueParticipant {
@@ -103,7 +113,8 @@ impl Seance {
     }
 
     /// `connectes` : nombre de participants dont le téléphone est connecté en ce moment.
-    pub fn vue_ecran(&self, connectes: usize) -> VueEcran {
+    /// `maintenant` : millisecondes depuis 1970 (temps restant des minuteries).
+    pub fn vue_ecran(&self, connectes: usize, maintenant: u64) -> VueEcran {
         let activite = self.courante.and_then(|id| self.etape(id)).map(|e| {
             let reponses = e.contenu.nombre_de_reponses();
             ActiviteEcran {
@@ -112,6 +123,7 @@ impl Seance {
                 revelee: e.revelee,
                 figee: e.figee,
                 reponses,
+                reste_ms: e.reste_ms(maintenant),
                 resultat: (e.revelee && affichable(reponses))
                     .then(|| e.contenu.resultat().pour_ecran()),
             }
@@ -131,6 +143,7 @@ impl Seance {
                     revelee: e.revelee,
                     figee: e.figee,
                     reponses,
+                    reste_ms: e.reste_ms(maintenant),
                     affichable: affichable(reponses),
                     resultat: e.contenu.resultat(),
                 }
@@ -160,7 +173,7 @@ mod tests {
         for p in 1..=3 {
             s.repondre(p, 1, Reponse::Choix(0)).unwrap();
         }
-        let v = s.vue_ecran(3);
+        let v = s.vue_ecran(3, 0);
         assert_eq!(v.activite.as_ref().map(|a| a.reponses), Some(3));
         assert_eq!(v.activite.and_then(|a| a.resultat), None);
     }
@@ -171,11 +184,11 @@ mod tests {
         s.executer(Commande::Reveler { id: None, on: true }).unwrap();
         s.repondre(1, 1, Reponse::Choix(0)).unwrap();
         s.repondre(2, 1, Reponse::Choix(1)).unwrap();
-        assert_eq!(s.vue_ecran(3).activite.and_then(|a| a.resultat), None);
+        assert_eq!(s.vue_ecran(3, 0).activite.and_then(|a| a.resultat), None);
 
         s.repondre(3, 1, Reponse::Choix(1)).unwrap();
         assert_eq!(
-            s.vue_ecran(3).activite.and_then(|a| a.resultat),
+            s.vue_ecran(3, 0).activite.and_then(|a| a.resultat),
             Some(Resultat::Sondage(ResultatSondage { effectifs: vec![1, 2, 0], total: 3 }))
         );
     }
@@ -208,7 +221,7 @@ mod tests {
     #[test]
     fn format_json_de_la_vue_ecran() {
         let (s, _) = seance_avec_sondage();
-        let json = serde_json::to_value(s.vue_ecran(2)).unwrap();
+        let json = serde_json::to_value(s.vue_ecran(2, 0)).unwrap();
         assert_eq!(json["activite"]["type"], "sondage");
         assert_eq!(json["activite"]["options"][1], "Thé");
         assert!(json["activite"].get("resultat").is_none());
@@ -226,7 +239,7 @@ mod tests {
         s.inscrire("a");
         let json = serde_json::to_value(s.vue_participant(1, 0)).unwrap();
         assert!(json["activite"].get("bonne").is_none());
-        let json = serde_json::to_value(s.vue_ecran(1)).unwrap();
+        let json = serde_json::to_value(s.vue_ecran(1, 0)).unwrap();
         assert!(json["activite"].get("bonne").is_none());
         s.executer(Commande::Reveler { id: None, on: true }).unwrap();
         let json = serde_json::to_value(s.vue_participant(1, 0)).unwrap();
@@ -237,7 +250,7 @@ mod tests {
     fn signaux_sur_la_console_seulement() {
         let (mut s, _) = seance_avec_sondage();
         s.signaler(1, crate::signal::TypeSignal::Perdu, 0).unwrap();
-        let ecran = serde_json::to_string(&s.vue_ecran(3)).unwrap();
+        let ecran = serde_json::to_string(&s.vue_ecran(3, 0)).unwrap();
         assert!(!ecran.contains("perdu"));
         let console = s.vue_console(3, 0);
         assert_eq!(console.signaux.iter().map(|c| c.n).sum::<usize>(), 1);

@@ -37,7 +37,7 @@ scripts/creer-appimage.sh                   # fabrique target/appimage/Padaone-<
 
 Un seul fichier d'environ 2,5 Mo, sans installation, qui tourne sur tout Linux 64 bits (binaire statique).
 Double-clic : un terminal s'ouvre avec les liens de la séance, et la console s'ouvre dans le navigateur.
-Depuis un terminal, il s'utilise comme `padaone` : `./Padaone-0.1.0-x86_64.AppImage point-acces diag`.
+Depuis un terminal, il s'utilise comme `padaone` : `./Padaone-0.3.0-x86_64.AppImage point-acces diag`.
 
 ## Organisation
 

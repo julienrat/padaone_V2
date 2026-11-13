@@ -10,6 +10,7 @@ use crate::activite::{Collecte, ErreurConfiguration, ErreurReponse, IdParticipan
 use crate::echelle::{Echelle, ResultatEchelle};
 use crate::meteo::{Meteo, Point, ResultatMeteo};
 use crate::nuage::{self, ModerationMots, Nuage, ResultatNuage};
+use crate::ordre::{Ordre, ResultatOrdre};
 use crate::ouverte::{Ouverte, ResultatOuverte};
 use crate::pari::{Pari, ReponsePari, ResultatPari};
 use crate::questions::{ConfigQuestions, DonneesQuestions, Questions, ResultatQuestions, Vote};
@@ -31,6 +32,8 @@ pub enum Configuration {
     Roti(Roti),
     Ouverte(Ouverte),
     Questions(ConfigQuestions),
+    /// Remise en ordre par glisser-déposer.
+    Ordre(Ordre),
 }
 
 impl Configuration {
@@ -50,7 +53,16 @@ impl Configuration {
             Configuration::Roti(r) => Configuration::Roti(r.validee()?),
             Configuration::Ouverte(o) => Configuration::Ouverte(o.validee()?),
             Configuration::Questions(q) => Configuration::Questions(q.validee()?),
+            Configuration::Ordre(o) => Configuration::Ordre(o.validee()?),
         })
+    }
+
+    /// Durée de la minuterie de l'activité, en secondes, si elle en a une.
+    pub fn duree_minuterie(&self) -> Option<u32> {
+        match self {
+            Configuration::Ordre(o) => o.duree,
+            _ => None,
+        }
     }
 
     /// Version montrée aux téléphones et à l'écran : sans la bonne réponse du pari
@@ -58,6 +70,7 @@ impl Configuration {
     pub fn publique(&self, revelee: bool) -> Self {
         match self {
             Configuration::Pari(p) if !revelee => Configuration::Pari(p.sans_bonne_reponse()),
+            Configuration::Ordre(o) => Configuration::Ordre(o.publique(revelee)),
             autre => autre.clone(),
         }
     }
@@ -79,6 +92,8 @@ pub enum Reponse {
     Texte(String),
     Question(String),
     Vote(Vote),
+    /// Remise en ordre : positions affichées, dans l'ordre proposé.
+    Ordre(Vec<usize>),
 }
 
 /// Résultat agrégé d'une activité (sérialisé sans étiquette : la vue porte déjà le type).
@@ -93,6 +108,7 @@ pub enum Resultat {
     Roti(ResultatRoti),
     Ouverte(ResultatOuverte),
     Questions(ResultatQuestions),
+    Ordre(ResultatOrdre),
 }
 
 impl Resultat {
@@ -126,6 +142,7 @@ pub(crate) enum Contenu {
     Roti(Collecte<Roti>),
     Ouverte(Collecte<Ouverte>),
     Questions(Questions),
+    Ordre(Collecte<Ordre>),
 }
 
 /// Applique la même expression à toutes les collectes ; `Questions` a son propre traitement.
@@ -139,6 +156,7 @@ macro_rules! selon_collecte {
             Contenu::Pari($c) => $e,
             Contenu::Roti($c) => $e,
             Contenu::Ouverte($c) => $e,
+            Contenu::Ordre($c) => $e,
             Contenu::Questions($q) => $eq,
         }
     };
@@ -156,6 +174,7 @@ impl Contenu {
             Configuration::Pari(p) => Contenu::Pari(Collecte::new(p.clone())),
             Configuration::Roti(r) => Contenu::Roti(Collecte::new(r.clone())),
             Configuration::Ouverte(o) => Contenu::Ouverte(Collecte::new(o.clone())),
+            Configuration::Ordre(o) => Contenu::Ordre(Collecte::new(o.clone())),
             Configuration::Questions(q) => Contenu::Questions(Questions::new(q.clone())),
         }
     }
@@ -170,6 +189,7 @@ impl Contenu {
             Contenu::Pari(c) => Configuration::Pari(c.activite.clone()),
             Contenu::Roti(c) => Configuration::Roti(c.activite.clone()),
             Contenu::Ouverte(c) => Configuration::Ouverte(c.activite.clone()),
+            Contenu::Ordre(c) => Configuration::Ordre(c.activite.clone()),
             Contenu::Questions(q) => Configuration::Questions(q.config.clone()),
         }
     }
@@ -190,6 +210,7 @@ impl Contenu {
             Contenu::Pari(c) => c.reponse_de(p).map(|&r| Reponse::Pari(r)),
             Contenu::Roti(c) => c.reponse_de(p).map(|r| Reponse::Roti(r.clone())),
             Contenu::Ouverte(c) => c.reponse_de(p).map(|t| Reponse::Texte(t.clone())),
+            Contenu::Ordre(c) => c.reponse_de(p).map(|o| Reponse::Ordre(o.clone())),
             Contenu::Questions(_) => None,
         }
     }
@@ -211,6 +232,7 @@ impl Contenu {
             Contenu::Pari(c) => Resultat::Pari(c.resultat()),
             Contenu::Roti(c) => Resultat::Roti(c.resultat()),
             Contenu::Ouverte(c) => Resultat::Ouverte(c.resultat()),
+            Contenu::Ordre(c) => Resultat::Ordre(c.resultat()),
             Contenu::Questions(q) => Resultat::Questions(q.resultat()),
         }
     }
@@ -228,6 +250,7 @@ impl Contenu {
             (Contenu::Pari(c), Reponse::Pari(r)) => c.repondre(p, *r),
             (Contenu::Roti(c), Reponse::Roti(r)) => c.repondre(p, r.clone()),
             (Contenu::Ouverte(c), Reponse::Texte(t)) => c.repondre(p, t.clone()),
+            (Contenu::Ordre(c), Reponse::Ordre(o)) => c.repondre(p, o.clone()),
             (Contenu::Questions(q), Reponse::Question(t)) => q.poser(p, t),
             (Contenu::Questions(q), Reponse::Vote(v)) => q.voter(p, *v),
             _ => Err(ErreurReponse::TypeIncompatible),

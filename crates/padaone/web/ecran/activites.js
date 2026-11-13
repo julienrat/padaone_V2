@@ -10,6 +10,7 @@ import {
   COULEURS_OPTIONS,
   ENCRES_OPTIONS,
   COULEURS_TEXTE,
+  iconeOrdre,
 } from "/commun/outils.js";
 
 const CARTONS = ["#2dd4a7", "#ff6b4a", "#ffd23f", "#49a8ff", "#ff7ac6", "#6c3bff"];
@@ -359,4 +360,36 @@ function questions(a) {
   ];
 }
 
-export const RENDUS = { sondage, cartons, nuage, echelle, meteo, pari, roti, ouverte, questions };
+// --- Remise en ordre : le bon ordre et la part de la salle qui a bien placé chaque élément --
+
+function ordre(a) {
+  const r = a.resultat;
+  const bonOrdre = (a.solution ?? []).map((p) => a.elements[p]);
+  const n = bonOrdre.length;
+  return [
+    el(
+      "p",
+      { class: "bilan-ordre" },
+      el("strong", {}, String(r.parfaits)),
+      ` proposition${r.parfaits > 1 ? "s" : ""} parfaite${r.parfaits > 1 ? "s" : ""} sur ${r.total}`,
+      el("span", { class: "discret" }, ` · en moyenne ${nombre(r.moyenne)} élément${r.moyenne > 1 ? "s" : ""} sur ${n} bien placés`),
+    ),
+    el(
+      "ol",
+      { class: `bon-ordre n${n}`, role: "list", "aria-label": "Le bon ordre" },
+      bonOrdre.map((e, k) => {
+        const part = r.total ? Math.round((100 * r.bien_places[k]) / r.total) : 0;
+        return el(
+          "li",
+          { class: "ligne-bon-ordre" },
+          el("span", { class: "rang-ordre", "aria-hidden": "true" }, String(k + 1)),
+          el("span", { class: "texte-ordre" }, iconeOrdre(e), e.texte),
+          el("span", { class: "piste", "aria-hidden": "true" }, el("span", { class: "remplissage", style: { display: "block", width: `${part}%`, background: "var(--menthe)" } })),
+          el("span", { class: "part-ordre" }, `${part} %`, el("small", {}, " bien placé")),
+        );
+      }),
+    ),
+  ];
+}
+
+export const RENDUS = { sondage, cartons, nuage, echelle, meteo, pari, roti, ouverte, questions, ordre };

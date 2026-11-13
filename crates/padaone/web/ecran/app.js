@@ -2,7 +2,7 @@
 // Rien ne s'affiche sans le geste de l'animateur, ni sous 3 réponses (le serveur l'assure).
 
 import { connecter } from "/commun/connexion.js";
-import { el, codeLisible, logo, NOMS_ACTIVITES } from "/commun/outils.js";
+import { el, codeLisible, logo, elementMinuterie, reglerMinuterie, NOMS_ACTIVITES } from "/commun/outils.js";
 import { RENDUS } from "/ecran/activites.js";
 
 const scene = document.getElementById("scene");
@@ -115,11 +115,13 @@ function afficherAccueil() {
 }
 
 function afficherActivite(a) {
+  reglerMinuterie(a.reste_ms, a.id);
   const entete = el(
     "div",
     { class: "ligne-activite" },
     el("span", { class: `pastille type-${a.type}` }, NOMS_ACTIVITES[a.type] ?? a.type),
     a.figee ? el("span", { class: "pastille fermee" }, "Réponses fermées") : null,
+    a.reste_ms !== undefined && !a.resultat ? elementMinuterie("minuterie-ecran") : null,
   );
   // Les questions longues (ou le nuage, qui a besoin de place) prennent moins de hauteur.
   const compacte = a.type === "nuage" || a.question.length > 45;

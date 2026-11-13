@@ -3,7 +3,7 @@
 // Le jeton anonyme est gardé dans le navigateur pour retrouver sa place après une coupure.
 
 import { connecter } from "/commun/connexion.js";
-import { el, codeLisible, logo, NOMS_ACTIVITES, SIGNAUX } from "/commun/outils.js";
+import { el, codeLisible, logo, reglerMinuterie, NOMS_ACTIVITES, SIGNAUX } from "/commun/outils.js";
 import { RENDUS } from "/p/activites.js";
 
 const contenu = document.getElementById("contenu");
@@ -99,7 +99,9 @@ function surMessage(m) {
     document.title = `${m.seance.titre} · Padaone`;
     barreSignaux.hidden = false;
   } else if (m.t === "etat") {
-    const texte = JSON.stringify(m);
+    reglerMinuterie(m.activite?.reste_ms, m.activite?.id);
+    // Le temps restant change à chaque envoi : on l'ignore pour décider de redessiner.
+    const texte = JSON.stringify(m, (cle, valeur) => (cle === "reste_ms" ? undefined : valeur));
     if (texte === derniereVue) return; // rien de neuf pour ce téléphone
     derniereVue = texte;
     vue = m;
@@ -178,8 +180,16 @@ function afficherAccueil(erreur = "") {
 
 // --- Activité en cours -------------------------------------------------------
 
+/** Pendant un glisser-déposer, on ne redessine pas : on attend que l'élément soit lâché. */
+let rendreBloque = false;
+let rendreEnAttente = false;
+
 function afficher() {
   if (!vue) return;
+  if (rendreBloque) {
+    rendreEnAttente = true;
+    return;
+  }
   // Garder le focus clavier (et le curseur de saisie) sur le même élément après le rendu.
   const actif = document.activeElement;
   const focus = actif?.dataset?.focus;
@@ -251,6 +261,13 @@ function rendre() {
       afficher();
     },
     rendre: afficher,
+    bloquer(oui) {
+      rendreBloque = oui;
+      if (!oui && rendreEnAttente) {
+        rendreEnAttente = false;
+        afficher();
+      }
+    },
   };
   contenu.replaceChildren(
     el("span", { class: `pastille etiquette type-${a.type}` }, NOMS_ACTIVITES[a.type] ?? a.type),

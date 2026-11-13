@@ -58,6 +58,22 @@ Options transverses : **avant/après** (rejouer une activité et comparer) et **
 - Suggestions de mots déjà proposés : désactivées par défaut.
 - Variantes V2 : nuage comparé (avant/après, groupe A/B), du nuage au vote, nuage rejoué.
 
+## 3 bis. Remise en ordre et minuterie
+
+- Les éléments sont configurés dans le bon ordre ; tous ont la même forme (rectangle arrondi). Les vues du téléphone et de l'écran les donnent
+  **mélangés** (mélange déterministe, rejoué à l'identique depuis le journal, jamais le bon ordre ni son
+  inverse) ; le participant répond avec les positions affichées. La `solution` (positions affichées dans
+  le bon ordre) n'apparaît dans ces vues qu'une fois le résultat révélé. La console reçoit la configuration
+  dans le bon ordre.
+- Score d'une proposition : nombre d'éléments à leur place exacte. Résultat : `total`, `parfaits`,
+  `scores` (effectif par score de 0 à n), `bien_places` (par élément, dans le bon ordre), `moyenne`.
+- Minuterie (activités qui ont une `duree`) : démarre au premier lancement (événement `minuterie_reglee`
+  avec l'heure de fin en millisecondes depuis 1970) ; à l'échéance, le serveur fige l'activité (événement
+  `figee`, vérifié chaque seconde) ; `reinitialiser` l'efface. Les vues portent `reste_ms` (temps restant) ;
+  chaque client en déduit l'échéance selon sa propre horloge.
+- Glisser-déposer par une poignée (événements pointeur : doigt et souris) ; repli : boutons ↑ ↓ et
+  touches fléchées sur la poignée.
+
 ## 4. Capteurs du téléphone
 
 | Interaction | Capteur | Règle |
@@ -142,7 +158,8 @@ nmcli connection down padaone-ap
   `titre_change`, `participant_inscrit` (`id`, `jeton`), `activite_ajoutee` (`id`, `configuration`),
   `activite_supprimee`, `activite_lancee`, `retour_accueil`, `revelee` (`id`, `on`), `figee` (`id`, `on`),
   `reinitialisee`, `reponse_enregistree` (`activite`, `participant`, `reponse`), `mot_masque` (`id`, `cle`, `on`),
-  `mots_fusionnes` (`id`, `de`, `vers`), `mot_separe` (`id`, `cle`), `element_valide` (`id`, `rang`, `on`). Les
+  `mots_fusionnes` (`id`, `de`, `vers`), `mot_separe` (`id`, `cle`), `element_valide` (`id`, `rang`, `on`),
+  `minuterie_reglee` (`id`, `fin` ou `null`). Les
   signaux discrets ne sont pas journalisés. Le journal ne contient aucun
   pseudo ni aucune adresse : le jeton sert seulement à retrouver un téléphone qui se reconnecte.
 - Reprise : `padaone --reprendre <journal>` relit les événements, garde le code de la séance et continue
@@ -184,6 +201,7 @@ Configuration (`ajouter`) et réponse de chaque type d'activité :
 | `roti` | `question` | `roti` : `{"valeur": 0 à 5, "mot": "…"}` (mot facultatif) |
 | `ouverte` | `question` | `texte` : 280 caractères au plus |
 | `questions` | `question` (consigne) | `question` : poser (200 caractères, 3 par personne) ; `vote` : `{"question": rang, "on": bool}` |
+| `ordre` | `question`, `elements` (3 à 8, **dans le bon ordre** : `texte` ≤ 40 caractères, `couleur` parmi `violet`, `corail`, `soleil`, `menthe`, `rose`, `ciel`, `lilas`, `peche`, `blanc`, `encre`), `duree` (secondes, 10 à 3600, facultative) | `ordre` : positions **affichées**, dans l'ordre proposé (une permutation) |
 
 Commandes de la console (`c`) : `ajouter` (`type` + champs ci-dessus), `supprimer` (`id`), `lancer` (`id`), `accueil`,
 `reveler` (`id`, `on`), `figer` (`id`, `on`), `reinitialiser` (`id`), `masquer_mot` (`id`, `cle`, `on`),
@@ -191,6 +209,7 @@ Commandes de la console (`c`) : `ajouter` (`type` + champs ci-dessus), `supprime
 `valider` (`id`, `rang`, `on` : message de la question ouverte ou question du public, projeté ou non),
 `mesurer` (`option`), `arreter_mesure`, `titre` (`titre`), `point_acces_demarrer` (réglages),
 `point_acces_arreter`, `diagnostic`, `point_acces_suggerer` (nouveau nom et mot de passe suggérés),
+`minuterie` (`id`, `on` : redémarre la minuterie pour sa durée et rouvre les réponses, ou l'arrête),
 `point_acces_options` (`arret_fin_seance`, `portail` : `ouvrir`, `silencieux`, `desactive` ; chacun facultatif). `point_acces_demarrer` prend `carte` (facultatif), `nom_reseau`,
 `securite` (`{"type":"wpa2","mot_de_passe":"…"}` ou `{"type":"ouvert"}`), `bande` (`auto`, `ghz2_4`, `ghz5`),
 `canal` (facultatif), `adresse` (`garder`, `par_defaut` ou `{"fixe":"192.168.50.1/24"}`). Les commandes réseau ne

@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/padaone-core", "crates/padaone-net", "crates/padaone"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "AGPL-3.0-or-later"
 rust-version = "1.85"

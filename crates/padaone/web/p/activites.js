@@ -7,7 +7,7 @@
 //   enEdition / editer(on)   mode « Modifier » après un envoi
 //   rendre()              redessine
 
-import { el, lettre, CERTITUDES, COULEURS_OPTIONS, ENCRES_OPTIONS } from "/commun/outils.js";
+import { el, lettre, carteOrdre, elementMinuterie, CERTITUDES, COULEURS_OPTIONS, ENCRES_OPTIONS } from "/commun/outils.js";
 
 /** Couleurs des cartons (fond) et encre lisible dessus. */
 const CARTONS = [
@@ -632,5 +632,161 @@ function questions(a, ctx) {
   ];
 }
 
-export const RENDUS = { sondage, cartons, nuage, echelle, meteo, pari, roti, ouverte, questions };
+// --- Remise en ordre -------------------------------------------------------------------
+// Les éléments arrivent mélangés ; la proposition est la suite des positions affichées.
+
+function ordre(a, ctx) {
+  const n = a.elements.length;
+  const minuterie = a.reste_ms !== undefined ? elementMinuterie("minuterie-tel") : null;
+  const mien = a.ma_reponse?.ordre ?? null;
+
+  if (a.revelee && a.solution) {
+    const bien = mien ? a.solution.filter((p, k) => mien[k] === p).length : null;
+    return [
+      el("h1", { class: "question" }, a.question),
+      el(
+        "div",
+        { class: "envoye", role: "status" },
+        el("p", { class: "envoye-titre" }, "Le bon ordre"),
+        bien === null
+          ? el("p", { class: "aide" }, "Vous n'aviez pas validé de proposition.")
+          : el("p", { class: "rappel" }, bien === n ? "Bravo, tout est juste !" : `${bien} élément${bien > 1 ? "s" : ""} sur ${n} à la bonne place.`),
+      ),
+      el(
+        "ol",
+        { class: "liste-ordre", role: "list" },
+        a.solution.map((p, k) =>
+          el(
+            "li",
+            { class: "ligne-ordre" },
+            el("span", { class: "numero-ordre", "aria-hidden": "true" }, String(k + 1)),
+            carteOrdre(a.elements[p]),
+            mien ? el("span", { class: `marque-ordre ${mien[k] === p ? "juste" : "faux"}` }, mien[k] === p ? "✓ bien placé" : "✗") : null,
+          ),
+        ),
+      ),
+    ];
+  }
+
+  if (mien && !ctx.enEdition) {
+    return [
+      minuterie,
+      el("h1", { class: "question" }, a.question),
+      el("div", { class: "envoye", role: "status" }, el("span", { class: "coche-ronde", "aria-hidden": "true" }, "✓"), el("p", { class: "envoye-titre" }, "Proposition validée !"), el("p", { class: "aide" }, "La correction arrive à l'écran.")),
+      el(
+        "ol",
+        { class: "liste-ordre compacte", role: "list" },
+        mien.map((p, k) => el("li", { class: "ligne-ordre" }, el("span", { class: "numero-ordre" }, String(k + 1)), carteOrdre(a.elements[p]))),
+      ),
+      a.ouverte ? el("button", { type: "button", class: "bouton-secondaire", "data-focus": "modifier", onclick: () => ctx.editer(true) }, "Modifier") : fermee(a),
+    ];
+  }
+
+  const courant = ctx.brouillon("ordre", mien ? [...mien] : [...Array(n).keys()]);
+  const liste = el("ol", { class: "liste-ordre", role: "list", "aria-label": "Éléments à remettre dans l'ordre" });
+  const annonce = el("p", { class: "visuellement-cache", "aria-live": "polite" });
+
+  const lire = () => [...liste.children].map((li) => Number(li.dataset.pos));
+  const garder = () => {
+    const nouvel = lire();
+    courant.splice(0, n, ...nouvel);
+    ctx.garder("ordre", courant);
+    [...liste.children].forEach((li, k) => (li.querySelector(".numero-ordre").textContent = String(k + 1)));
+  };
+  const deplacer = (li, sens) => {
+    const cible = sens < 0 ? li.previousElementSibling : li.nextElementSibling?.nextElementSibling ?? null;
+    if (sens < 0 && !li.previousElementSibling) return;
+    if (sens > 0 && !li.nextElementSibling) return;
+    liste.insertBefore(li, cible);
+    garder();
+    const rang = [...liste.children].indexOf(li) + 1;
+    annonce.textContent = `${a.elements[Number(li.dataset.pos)].texte} : position ${rang} sur ${n}.`;
+  };
+
+  for (const p of courant) {
+    const e = a.elements[p];
+    const poignee = el("button", {
+      type: "button",
+      class: "poignee",
+      "aria-label": `Déplacer « ${e.texte} » (flèches haut et bas)`,
+      disabled: !a.ouverte,
+      "data-focus": `poignee-${p}`,
+    }, "⠿");
+    const li = el(
+      "li",
+      { class: "ligne-ordre", "data-pos": String(p) },
+      poignee,
+      el("span", { class: "numero-ordre", "aria-hidden": "true" }, ""),
+      carteOrdre(e),
+      el(
+        "span",
+        { class: "fleches" },
+        el("button", { type: "button", class: "fleche", "aria-label": `Monter « ${e.texte} »`, disabled: !a.ouverte, "data-focus": `monter-${p}`, onclick: () => deplacer(li, -1) }, "↑"),
+        el("button", { type: "button", class: "fleche", "aria-label": `Descendre « ${e.texte} »`, disabled: !a.ouverte, "data-focus": `descendre-${p}`, onclick: () => deplacer(li, 1) }, "↓"),
+      ),
+    );
+    poignee.addEventListener("keydown", (ev) => {
+      if (ev.key === "ArrowUp" || ev.key === "ArrowDown") {
+        ev.preventDefault();
+        deplacer(li, ev.key === "ArrowUp" ? -1 : 1);
+        poignee.focus();
+      }
+    });
+    // Glisser-déposer au doigt ou à la souris, par la poignée (la page défile ailleurs).
+    poignee.addEventListener("pointerdown", (ev) => {
+      if (!a.ouverte) return;
+      ev.preventDefault();
+      poignee.setPointerCapture(ev.pointerId);
+      ctx.bloquer(true);
+      li.classList.add("souleve");
+      let depart = ev.clientY;
+      const suivre = (m) => {
+        const freres = [...liste.children];
+        const i = freres.indexOf(li);
+        const avant = li.offsetTop;
+        const suiv = freres[i + 1];
+        const prec = freres[i - 1];
+        if (suiv && m.clientY > suiv.getBoundingClientRect().top + suiv.offsetHeight / 2) {
+          liste.insertBefore(suiv, li);
+        } else if (prec && m.clientY < prec.getBoundingClientRect().top + prec.offsetHeight / 2) {
+          liste.insertBefore(li, prec);
+        }
+        depart += li.offsetTop - avant;
+        li.style.transform = `translateY(${m.clientY - depart}px)`;
+      };
+      const lacher = () => {
+        poignee.removeEventListener("pointermove", suivre);
+        li.classList.remove("souleve");
+        li.style.transform = "";
+        garder();
+        ctx.bloquer(false);
+      };
+      poignee.addEventListener("pointermove", suivre);
+      poignee.addEventListener("pointerup", lacher, { once: true });
+      poignee.addEventListener("pointercancel", lacher, { once: true });
+    });
+    liste.append(li);
+  }
+  [...liste.children].forEach((li, k) => (li.querySelector(".numero-ordre").textContent = String(k + 1)));
+
+  return [
+    minuterie,
+    el("h1", { class: "question" }, a.question),
+    el("p", { class: "aide" }, "Faites glisser les éléments par la poignée ⠿ (ou utilisez les flèches), puis validez."),
+    liste,
+    annonce,
+    el("button", {
+      type: "button",
+      class: "bouton-principal",
+      disabled: !a.ouverte,
+      "data-focus": "envoyer",
+      onclick: () => {
+        if (ctx.envoyer({ ordre: lire() })) ctx.editer(false);
+      },
+    }, "Valider ma proposition"),
+    fermee(a),
+  ];
+}
+
+export const RENDUS = { sondage, cartons, nuage, echelle, meteo, pari, roti, ouverte, questions, ordre };
 

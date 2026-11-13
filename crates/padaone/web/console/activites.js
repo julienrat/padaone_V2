@@ -1,7 +1,16 @@
 // Console : champs de création de chaque type d'activité, et affichage des résultats
 // avec les outils de modération. L'animateur ne voit jamais qui a répondu quoi.
 
-import { el, lettre, nombre, COULEURS_OPTIONS } from "/commun/outils.js";
+import {
+  el,
+  lettre,
+  nombre,
+  carteOrdre,
+  elementMinuterie,
+  formatDuree,
+  COULEURS_OPTIONS,
+  COULEURS_ORDRE,
+} from "/commun/outils.js";
 
 let compteurChamps = 0;
 const identifiant = (prefixe) => `${prefixe}-${++compteurChamps}`;
@@ -148,7 +157,119 @@ export const FORMULAIRES = {
     const q = champQuestion("Vos questions", "Consigne");
     return { elements: q.elements, lire: () => ({ question: q.lire() }) };
   },
+  ordre() {
+    const q = champQuestion("Remettez les étapes dans l'ordre", "Consigne");
+    const e = listeElementsOrdre();
+    const m = minuterieFormulaire(120);
+    return {
+      elements: [...q.elements, ...e.elements, ...m.elements],
+      lire: () => ({ question: q.lire(), elements: e.lire(), duree: m.lire() }),
+    };
+  },
 };
+
+// --- Champs de la remise en ordre ---------------------------------------------------------
+
+/** Éléments dans le BON ordre (3 à 8), chacun avec texte et couleur, et un aperçu. */
+function listeElementsOrdre() {
+  const MIN = 3;
+  const MAX = 8;
+  const couleurs = Object.keys(COULEURS_ORDRE);
+  const conteneur = el("ol", { class: "elements-ordre" });
+  const ajouter = el("button", { type: "button", class: "b" }, "+ Élément");
+
+  function renumeroter() {
+    [...conteneur.children].forEach((ligne, i) => {
+      ligne.querySelector(".champ-texte").setAttribute("aria-label", `Élément ${i + 1} (dans le bon ordre)`);
+      ligne.querySelector(".choix-couleur").setAttribute("aria-label", `Couleur de l'élément ${i + 1}`);
+      ligne.querySelector(".retirer").setAttribute("aria-label", `Retirer l'élément ${i + 1}`);
+    });
+    ajouter.disabled = conteneur.children.length >= MAX;
+  }
+
+  function ligne(i) {
+    const texte = el("input", { class: "champ champ-texte", maxlength: "40", required: true, autocomplete: "off" });
+    const couleur = el(
+      "select",
+      { class: "champ choix-couleur" },
+      couleurs.map((v, k) => el("option", { value: v, selected: k === i % couleurs.length }, COULEURS_ORDRE[v][2])),
+    );
+    const apercu = el("span", { class: "apercu-ordre", "aria-hidden": "true" });
+    const maj = () => apercu.replaceChildren(carteOrdre({ texte: texte.value || "Aperçu", couleur: couleur.value }));
+    for (const c of [texte, couleur]) c.addEventListener("input", maj);
+    maj();
+    const l = el(
+      "li",
+      { class: "ligne-element" },
+      texte,
+      el("div", { class: "reglages-element" }, couleur, apercu),
+      el(
+        "button",
+        {
+          type: "button",
+          class: "b retirer",
+          onclick: () => {
+            if (conteneur.children.length > MIN) {
+              l.remove();
+              renumeroter();
+            }
+          },
+        },
+        "×",
+      ),
+    );
+    return l;
+  }
+
+  for (let i = 0; i < MIN; i++) conteneur.append(ligne(i));
+  ajouter.addEventListener("click", () => {
+    if (conteneur.children.length < MAX) {
+      const l = ligne(conteneur.children.length);
+      conteneur.append(l);
+      renumeroter();
+      l.querySelector(".champ-texte").focus();
+    }
+  });
+  renumeroter();
+
+  return {
+    elements: [
+      el(
+        "fieldset",
+        { class: "champs-options" },
+        el("legend", {}, "Éléments, dans le bon ordre (3 à 8, 40 caractères)"),
+        el("p", { class: "petit" }, "Les téléphones les recevront mélangés."),
+        conteneur,
+      ),
+      ajouter,
+    ],
+    lire: () =>
+      [...conteneur.children].map((l) => ({
+        texte: l.querySelector(".champ-texte").value.trim(),
+        couleur: l.querySelector(".choix-couleur").value,
+      })),
+  };
+}
+
+/** Case « minuterie » et durée en minutes et secondes (10 s à 60 min). */
+function minuterieFormulaire(defaut) {
+  const id = `minuterie-${Math.random().toString(36).slice(2, 8)}`;
+  const active = el("input", { type: "checkbox", id });
+  const minutes = el("input", { class: "champ court", type: "number", min: "0", max: "60", value: String(Math.floor(defaut / 60)), "aria-label": "Minutes", disabled: true });
+  const secondes = el("input", { class: "champ court", type: "number", min: "0", max: "59", step: "5", value: String(defaut % 60), "aria-label": "Secondes", disabled: true });
+  active.addEventListener("change", () => {
+    minutes.disabled = !active.checked;
+    secondes.disabled = !active.checked;
+  });
+  return {
+    elements: [
+      el("label", { class: "case-minuterie", for: id }, active, " Minuterie"),
+      el("div", { class: "duree" }, minutes, el("span", {}, "min"), secondes, el("span", {}, "s")),
+      el("p", { class: "petit" }, "Elle démarre au lancement ; à zéro, les réponses sont figées."),
+    ],
+    lire: () => (active.checked ? (Number(minutes.value) || 0) * 60 + (Number(secondes.value) || 0) : null),
+  };
+}
 
 // --- Résultats et modération ------------------------------------------------------------
 
@@ -339,6 +460,41 @@ export const RESULTATS = {
     el("p", { class: "petit" }, "Rien n'est projeté sans votre validation. Les auteurs restent anonymes, même pour vous."),
     listeModeree(e.resultat.messages, commande, e, { etiquette: "Projeter" }),
   ],
+  ordre: (e, commande) => {
+    const r = e.resultat;
+    const n = e.elements.length;
+    const blocs = [
+      chiffres(
+        ["Parfaites", `${r.parfaits} / ${r.total}`],
+        ["Score moyen", r.moyenne === null || r.moyenne === undefined ? "–" : `${nombre(r.moyenne)} / ${n}`],
+      ),
+      el(
+        "ol",
+        { class: "resultats-ordre", role: "list", "aria-label": "Bon ordre et éléments bien placés" },
+        e.elements.map((x, k) =>
+          el(
+            "li",
+            {},
+            el("span", { class: "rang" }, `${k + 1}.`),
+            carteOrdre(x),
+            el("span", { class: "petit" }, `bien placé ${r.bien_places[k]} fois sur ${r.total}`),
+          ),
+        ),
+      ),
+    ];
+    if (e.duree) {
+      blocs.push(
+        el(
+          "div",
+          { class: "commandes-minuterie" },
+          e.reste_ms !== undefined ? elementMinuterie() : el("span", { class: "petit" }, "Minuterie pas encore démarrée."),
+          el("button", { type: "button", class: "b petit", onclick: () => commande("minuterie", { id: e.id, on: true }) }, `Relancer la minuterie (${formatDuree(e.duree * 1000)})`),
+          e.reste_ms > 0 ? el("button", { type: "button", class: "b petit", onclick: () => commande("minuterie", { id: e.id, on: false }) }, "Arrêter la minuterie") : null,
+        ),
+      );
+    }
+    return blocs;
+  },
   questions: (e, commande) => [
     el("p", { class: "petit" }, "Validez les questions : elles deviennent visibles sur les téléphones (pour voter) et à l'écran."),
     listeModeree(e.resultat.questions, commande, e, { etiquette: "Valider" }),

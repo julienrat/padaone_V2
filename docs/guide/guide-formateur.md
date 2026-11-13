@@ -45,10 +45,10 @@ Téléchargez la version de votre système sur la page des
 
 ### Sous Linux : l'AppImage
 
-Padaone tient en un seul fichier : `Padaone-0.2.0-x86_64.AppImage`, qui tourne sur tout Linux 64 bits.
+Padaone tient en un seul fichier : `Padaone-0.3.0-x86_64.AppImage`, qui tourne sur tout Linux 64 bits.
 
 1. La première fois, rendez le fichier exécutable : clic droit › *Propriétés* › *Permissions* ›
-   cochez *Autoriser l'exécution*. Ou, dans un terminal : `chmod +x Padaone-0.2.0-x86_64.AppImage`.
+   cochez *Autoriser l'exécution*. Ou, dans un terminal : `chmod +x Padaone-0.3.0-x86_64.AppImage`.
 2. **Double-cliquez** dessus : un terminal s'ouvre avec le code et les liens de la séance, et la
    console s'ouvre toute seule dans votre navigateur.
 3. Pour terminer la séance : dans ce terminal, **Ctrl+C**.
@@ -56,13 +56,13 @@ Padaone tient en un seul fichier : `Padaone-0.2.0-x86_64.AppImage`, qui tourne s
 Pour donner un titre à la séance, lancez-la depuis un terminal :
 
 ```bash
-./Padaone-0.2.0-x86_64.AppImage --titre "Animer des réunions participatives · jour 1" --ouvrir-console
+./Padaone-0.3.0-x86_64.AppImage --titre "Animer des réunions participatives · jour 1" --ouvrir-console
 ```
 
 Le terminal affiche alors :
 
 ```text
-  Padaone 0.1.0 — « Animer des réunions participatives · jour 1 »
+  Padaone 0.3.0 — « Animer des réunions participatives · jour 1 »
   Code de la séance : 342 751
 
   Participants : http://192.168.1.23:8080/p?code=342751
@@ -72,7 +72,7 @@ Le terminal affiche alors :
 
 ### Sous Windows
 
-1. Décompressez `Padaone-0.2.0-windows-x86_64.zip` (clic droit › *Extraire tout*), puis double-cliquez
+1. Décompressez `Padaone-0.3.0-windows-x86_64.zip` (clic droit › *Extraire tout*), puis double-cliquez
    sur `Padaone.exe`.
 2. La première fois, Windows affiche « Windows a protégé votre ordinateur » : cliquez sur
    *Informations complémentaires* puis *Exécuter quand même* (Padaone n'est pas encore signé).
@@ -83,7 +83,7 @@ Le terminal affiche alors :
 
 ### Sous macOS
 
-1. Décompressez `Padaone-0.2.0-macos-universel.zip` (Mac Apple ou Intel).
+1. Décompressez `Padaone-0.3.0-macos-universel.zip` (Mac Apple ou Intel).
 2. La première fois, macOS bloque les programmes non signés par Apple : clic droit (ou Ctrl+clic) sur
    `Padaone` › *Ouvrir* › *Ouvrir*. Au besoin : *Réglages Système* › *Confidentialité et sécurité* ›
    *Ouvrir quand même*.
@@ -313,6 +313,39 @@ dans la console. L'écran les classe par nombre de votes (les six premières).
 
 ![Questions classées par votes](images/ecran-questions.png)
 
+### Remise en ordre
+
+*Pour* : remettre des étapes dans l'ordre (un processus, une procédure, une chronologie), ordonner
+des cartes, reconstituer une séquence logique.
+*Réglages* : la consigne, puis de **3 à 8 éléments, saisis dans le bon ordre**. Pour chacun : un texte
+(40 caractères au plus) et une **couleur** parmi dix ; tous les éléments ont la même forme, un
+rectangle arrondi. Un aperçu montre le rendu. Cochez **Minuterie** pour limiter le
+temps, de 10 secondes à 60 minutes.
+
+<img src="images/console-ordre-formulaire.png" width="300" alt="Formulaire de la remise en ordre">
+
+<p>
+<img src="images/tel-ordre.png" width="260" alt="Glisser-déposer des éléments sur le téléphone">
+<img src="images/tel-ordre-correction.png" width="260" alt="Correction sur le téléphone après la révélation">
+</p>
+
+- Les téléphones reçoivent les éléments **mélangés**. Le participant les fait glisser avec la poignée
+  ⠿ (au doigt ou à la souris) ; les flèches ↑ ↓ font la même chose, ainsi que les touches fléchées du
+  clavier. Il **valide** quand sa proposition lui semble bonne ; il peut la modifier tant que le temps
+  n'est pas écoulé.
+- **Minuterie** : elle démarre au lancement de l'activité et s'affiche sur les téléphones, à l'écran
+  et dans la console. À zéro, les réponses sont figées automatiquement. Dans la console, **Relancer la
+  minuterie** redonne la durée complète (et rouvre les réponses), **Arrêter la minuterie** la suspend.
+- Rien ne trahit le bon ordre avant que vous ne **révéliez** : l'écran montre alors le bon ordre, le
+  nombre de propositions parfaites et, pour chaque élément, la part de la salle qui l'a bien placé.
+  Chaque participant voit sur son téléphone combien d'éléments il avait bien placés.
+
+![Minuterie à l'écran pendant l'activité](images/ecran-ordre-attente.png)
+
+![Le bon ordre et les éléments bien placés](images/ecran-ordre.png)
+
+![Résultats et minuterie dans la console](images/console-ordre.png)
+
 ### ROTI et mot de la fin
 
 *Pour* : clore une séquence (*Return On Time Invested* : ce temps valait-il la peine ?).
@@ -373,7 +406,7 @@ Dans la console, cliquez sur **Wi-Fi : point d'accès**.
 
 Le **diagnostic** à droite vérifie la carte, les bandes, la capacité estimée et les droits. Une coche
 verte partout : tout est prêt. Le diagnostic se lance aussi depuis un terminal, sans rien modifier :
-`./Padaone-0.2.0-x86_64.AppImage point-acces diag`.
+`./Padaone-0.3.0-x86_64.AppImage point-acces diag`.
 
 > **Combien de téléphones ?** Une carte Wi-Fi intégrée (Intel, la plus courante) tient souvent
 > **8 à 14 appareils**. Au-delà, branchez une clé Wi-Fi USB (une vingtaine d'euros) ou un petit
@@ -401,7 +434,7 @@ du système, à faire une seule fois par PC. Padaone ne les fait jamais lui-mêm
 commandes à copier dans un terminal.
 
 ```bash
-./Padaone-0.2.0-x86_64.AppImage point-acces portail
+./Padaone-0.3.0-x86_64.AppImage point-acces portail
 ```
 
 Tant que ce n'est pas fait, la page Point d'accès l'indique sous le réglage du portail, et Padaone
@@ -428,7 +461,7 @@ jamais ce mot de passe.
   reconnectent seuls :
 
   ```bash
-  ./Padaone-0.2.0-x86_64.AppImage --reprendre ~/.local/share/padaone/seances/seance-…-342751.jsonl
+  ./Padaone-0.3.0-x86_64.AppImage --reprendre ~/.local/share/padaone/seances/seance-…-342751.jsonl
   ```
 
 ## 9. En cas de souci
@@ -464,4 +497,4 @@ jamais ce mot de passe.
 | `point-acces portail` | État du portail captif et commandes d'installation |
 | `point-acces demarrer` / `arreter` | Point d'accès depuis le terminal, sans la console |
 
-Toutes les options : `./Padaone-0.2.0-x86_64.AppImage --help`.
+Toutes les options : `./Padaone-0.3.0-x86_64.AppImage --help`.

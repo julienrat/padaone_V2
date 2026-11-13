@@ -709,3 +709,122 @@ body {
   background: #e6fbf5;
   font-size: 0.9rem;
 }
+
+/* Remise en ordre */
+
+.liste-ordre {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ligne-ordre {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 2px solid var(--lilas);
+  border-radius: var(--rayon-m);
+  background: var(--fond);
+}
+
+.ligne-ordre .carte-ordre {
+  flex: 1 1 auto;
+}
+
+.ligne-ordre.souleve {
+  position: relative;
+  z-index: 3;
+  border-color: var(--encre);
+  background: var(--surface);
+  box-shadow: var(--ombre-forte);
+}
+
+.poignee {
+  flex: 0 0 auto;
+  width: 44px;
+  min-height: 52px;
+  border: 2px solid var(--encre);
+  border-radius: var(--rayon-s);
+  background: var(--surface);
+  color: var(--encre);
+  font-size: 1.4rem;
+  cursor: grab;
+  touch-action: none;
+}
+
+.souleve .poignee {
+  cursor: grabbing;
+  background: var(--soleil);
+}
+
+.numero-ordre {
+  flex: 0 0 auto;
+  min-width: 22px;
+  font-family: var(--police-titre);
+  font-weight: 800;
+  text-align: center;
+}
+
+.fleches {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fleche {
+  width: 44px;
+  min-height: 44px;
+  border: 2px solid var(--encre);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--encre);
+  font-weight: 800;
+}
+
+.poignee:disabled,
+.fleche:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.poignee:focus-visible,
+.fleche:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 2px;
+}
+
+.liste-ordre.compacte {
+  font-size: 0.9rem;
+}
+
+.marque-ordre {
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+
+.marque-ordre.juste {
+  color: #0f766e;
+}
+
+.marque-ordre.faux {
+  color: #b4401a;
+}
+
+.minuterie-tel {
+  align-self: flex-start;
+  font-size: 1.1rem;
+}
+
+.visuellement-cache {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

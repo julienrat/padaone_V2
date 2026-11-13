@@ -23,6 +23,7 @@ pub mod evenement;
 pub mod meteo;
 pub mod mots;
 pub mod nuage;
+pub mod ordre;
 pub mod ouverte;
 pub mod pari;
 pub mod questions;

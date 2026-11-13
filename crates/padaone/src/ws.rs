@@ -187,15 +187,19 @@ fn traiter(partage: &Arc<Partage>, client: Client, texte: &str) -> Option<Messag
         (MessageClient::Commande(CommandeConsole::Reseau(commande)), Client::Console) => {
             reseau::lancer(partage, commande).map(MessageServeur::erreur)
         }
-        (MessageClient::Commande(CommandeConsole::Seance(commande)), Client::Console) => partage
-            .modifier(|e| match e.seance.executer(commande) {
-                Ok(ev) => {
-                    tracing::info!("console : {ev:?}");
-                    e.journaliser(&ev);
+        (MessageClient::Commande(CommandeConsole::Seance(commande)), Client::Console) => {
+            let maintenant = partage.maintenant();
+            partage.modifier(|e| match e.seance.executer_a(commande, maintenant) {
+                Ok(evenements) => {
+                    for ev in &evenements {
+                        tracing::info!("console : {ev:?}");
+                        e.journaliser(ev);
+                    }
                     None
                 }
                 Err(err) => Some(MessageServeur::erreur(majuscule(&err.to_string()))),
-            }),
+            })
+        }
         (
             MessageClient::Reponse { .. }
             | MessageClient::Commande(_)
@@ -212,7 +216,7 @@ fn vue(partage: &Partage, client: Client) -> String {
     let e = partage.lire();
     match client {
         Client::Participant(id) => etat(&e.seance.vue_participant(id, maintenant)),
-        Client::Ecran => etat(&e.seance.vue_ecran(e.connectes())),
+        Client::Ecran => etat(&e.seance.vue_ecran(e.connectes(), maintenant)),
         Client::Console => {
             let point_acces = serde_json::to_value(&partage.reseau().point_acces).ok();
             etat_avec(

@@ -2,7 +2,7 @@
 // L'animateur voit tous les résultats, jamais qui a répondu quoi.
 
 import { connecter } from "/commun/connexion.js";
-import { el, codeLisible, logo, pluriel, NOMS_ACTIVITES, SIGNAUX } from "/commun/outils.js";
+import { el, codeLisible, logo, pluriel, reglerMinuterie, NOMS_ACTIVITES, SIGNAUX } from "/commun/outils.js";
 import { FORMULAIRES, RESULTATS } from "/console/activites.js";
 
 const $ = (id) => document.getElementById(id);
@@ -153,6 +153,7 @@ function afficherPrincipal() {
     statut = moderee ? "À l'écran : seuls les éléments validés s'affichent." : "À l'écran : résultat affiché.";
     classe = "visible";
   }
+  reglerMinuterie(e.reste_ms, e.id);
   const detail = RESULTATS[e.type]?.(e, commande, afficher) ?? [];
 
   principal.replaceChildren(

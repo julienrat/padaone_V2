@@ -40,6 +40,13 @@ pub enum Commande {
         id: Option<IdActivite>,
         on: bool,
     },
+    /// Minuterie : `on` la (re)démarre pour sa durée et rouvre les réponses, sinon l'arrête.
+    /// À exécuter avec l'heure ([`Seance::executer_a`]).
+    Minuterie {
+        #[serde(default)]
+        id: Option<IdActivite>,
+        on: bool,
+    },
     Figer {
         #[serde(default)]
         id: Option<IdActivite>,
@@ -103,6 +110,10 @@ pub enum ErreurSeance {
     IdentifiantPris,
     #[error("cette activité ne se modère pas ainsi")]
     ModerationImpossible,
+    #[error("cette activité n'a pas de minuterie")]
+    SansMinuterie,
+    #[error("cette commande a besoin de l'heure")]
+    HeureNecessaire,
     #[error("{0}")]
     Configuration(#[from] ErreurConfiguration),
     #[error("{0}")]
@@ -118,6 +129,15 @@ pub(crate) struct Etape {
     pub(crate) revelee: bool,
     /// Plus aucune réponse acceptée.
     pub(crate) figee: bool,
+    /// Heure de fin de la minuterie (millisecondes depuis 1970), si elle tourne ou a tourné.
+    pub(crate) fin_minuterie: Option<u64>,
+}
+
+impl Etape {
+    /// Temps restant de la minuterie à l'heure `maintenant` (0 une fois échue).
+    pub(crate) fn reste_ms(&self, maintenant: u64) -> Option<u64> {
+        self.fin_minuterie.map(|f| f.saturating_sub(maintenant))
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -209,6 +229,7 @@ impl Seance {
             Commande::Figer { id, on } => Evenement::Figee { id: self.cible(id)?, on },
             Commande::Reinitialiser { id } => Evenement::Reinitialisee { id: self.cible(id)? },
             Commande::Titre { titre } => Evenement::TitreChange { titre },
+            Commande::Minuterie { .. } => return Err(ErreurSeance::HeureNecessaire),
             Commande::MasquerMot { id, cle, on } => {
                 Evenement::MotMasque { id: self.cible(id)?, cle, on }
             }
@@ -259,6 +280,7 @@ impl Seance {
                     contenu: Contenu::new(&configuration),
                     revelee: false,
                     figee: false,
+                    fin_minuterie: None,
                 });
             }
             Evenement::ActiviteSupprimee { id } => {
@@ -280,6 +302,7 @@ impl Seance {
                 etape.contenu.vider();
                 etape.revelee = false;
                 etape.figee = false;
+                etape.fin_minuterie = None;
             }
             Evenement::ReponseEnregistree { activite, participant, reponse } => {
                 if !self.participants.values().any(|p| p == participant) {
@@ -311,8 +334,69 @@ impl Seance {
                     None => return Err(ErreurSeance::ModerationImpossible),
                 }
             }
+            Evenement::MinuterieReglee { id, fin } => {
+                let etape = self.etape_mut(*id)?;
+                if fin.is_some() && etape.contenu.configuration().duree_minuterie().is_none() {
+                    return Err(ErreurSeance::SansMinuterie);
+                }
+                etape.fin_minuterie = *fin;
+                if fin.is_some() {
+                    etape.figee = false;
+                }
+            }
         }
         Ok(())
+    }
+
+    /// Exécute une commande à l'heure `maintenant` (millisecondes depuis 1970) et renvoie les
+    /// événements à journaliser. En plus de [`Seance::executer`] :
+    /// - lancer une activité à minuterie la démarre, si elle n'a pas encore tourné ;
+    /// - la commande `minuterie` la redémarre ou l'arrête.
+    pub fn executer_a(
+        &mut self,
+        commande: Commande,
+        maintenant: u64,
+    ) -> Result<Vec<Evenement>, ErreurSeance> {
+        let fin_dans = |s: &Self, id: IdActivite| -> Option<u64> {
+            let duree = s.etape(id)?.contenu.configuration().duree_minuterie()?;
+            Some(maintenant + u64::from(duree) * 1000)
+        };
+        match commande {
+            Commande::Minuterie { id, on } => {
+                let id = self.cible(id)?;
+                self.etape(id).ok_or(ErreurSeance::ActiviteInconnue)?;
+                let fin = if on {
+                    Some(fin_dans(self, id).ok_or(ErreurSeance::SansMinuterie)?)
+                } else {
+                    None
+                };
+                let e = Evenement::MinuterieReglee { id, fin };
+                self.appliquer(&e)?;
+                Ok(vec![e])
+            }
+            Commande::Lancer { id } => {
+                let mut evenements = vec![self.executer(Commande::Lancer { id })?];
+                let jamais_partie =
+                    self.etape(id).is_some_and(|e| e.fin_minuterie.is_none() && !e.figee);
+                if let Some(fin) = fin_dans(self, id).filter(|_| jamais_partie) {
+                    let e = Evenement::MinuterieReglee { id, fin: Some(fin) };
+                    self.appliquer(&e)?;
+                    evenements.push(e);
+                }
+                Ok(evenements)
+            }
+            autre => Ok(vec![self.executer(autre)?]),
+        }
+    }
+
+    /// Activités dont la minuterie est échue et qui acceptent encore des réponses :
+    /// le serveur les fige (commande `figer`).
+    pub fn minuteries_echues(&self, maintenant: u64) -> Vec<IdActivite> {
+        self.deroule
+            .iter()
+            .filter(|e| !e.figee && e.fin_minuterie.is_some_and(|f| f <= maintenant))
+            .map(|e| e.id)
+            .collect()
     }
 
     /// Active ou éteint un signal discret. `maintenant` : instant en millisecondes.
@@ -621,5 +705,107 @@ pub(crate) mod tests {
         assert!(matches!(c, Commande::Ajouter(Configuration::Echelle(_))));
         let r: Reponse = serde_json::from_str(r#"{"pari":{"choix":1,"certitude":2}}"#).unwrap();
         assert!(matches!(r, Reponse::Pari(_)));
+    }
+
+    fn ordre_lance(duree: Option<u32>) -> (Seance, Vec<Evenement>) {
+        use crate::ordre::{Element, Ordre};
+        let (mut s, e0) = Seance::ouvrir("F", "1").unwrap();
+        let elements = ["Accueil", "Débat", "Décision"]
+            .iter()
+            .map(|t| Element { texte: t.to_string(), couleur: Default::default() })
+            .collect();
+        let config = Ordre {
+            question: "Dans l'ordre".into(),
+            elements,
+            duree,
+            solution: None,
+            melange: vec![],
+        };
+        let mut journal =
+            vec![e0, s.executer(Commande::Ajouter(Configuration::Ordre(config))).unwrap()];
+        journal.extend(s.executer_a(Commande::Lancer { id: 1 }, 1_000).unwrap());
+        s.inscrire("a");
+        (s, journal)
+    }
+
+    #[test]
+    fn la_minuterie_demarre_au_lancement() {
+        let (s, journal) = ordre_lance(Some(60));
+        assert_eq!(journal.last(), Some(&Evenement::MinuterieReglee { id: 1, fin: Some(61_000) }));
+        assert_eq!(s.etape(1).unwrap().reste_ms(31_000), Some(30_000));
+        let (sans, journal) = ordre_lance(None);
+        assert!(!journal.iter().any(|e| matches!(e, Evenement::MinuterieReglee { .. })));
+        assert_eq!(sans.etape(1).unwrap().reste_ms(5_000), None);
+    }
+
+    #[test]
+    fn relancer_ne_redemarre_pas_la_minuterie() {
+        let (mut s, _) = ordre_lance(Some(60));
+        s.executer(Commande::Accueil).unwrap();
+        let ev = s.executer_a(Commande::Lancer { id: 1 }, 50_000).unwrap();
+        assert_eq!(ev.len(), 1, "seulement le lancement");
+        assert_eq!(s.etape(1).unwrap().fin_minuterie, Some(61_000));
+    }
+
+    #[test]
+    fn echeance_puis_redemarrage_et_arret() {
+        let (mut s, _) = ordre_lance(Some(60));
+        assert!(s.minuteries_echues(60_999).is_empty());
+        assert_eq!(s.minuteries_echues(61_000), vec![1]);
+        s.executer(Commande::Figer { id: Some(1), on: true }).unwrap();
+        assert!(s.minuteries_echues(70_000).is_empty(), "déjà figée");
+
+        // Redémarrer rouvre les réponses pour une nouvelle durée.
+        s.executer_a(Commande::Minuterie { id: None, on: true }, 100_000).unwrap();
+        assert!(!s.etape(1).unwrap().figee);
+        assert_eq!(s.etape(1).unwrap().fin_minuterie, Some(160_000));
+        s.executer_a(Commande::Minuterie { id: None, on: false }, 120_000).unwrap();
+        assert!(s.minuteries_echues(500_000).is_empty(), "arrêtée");
+    }
+
+    #[test]
+    fn minuterie_refusee_sans_duree_et_effacee_par_reinitialiser() {
+        let (mut sans, _) = ordre_lance(None);
+        assert_eq!(
+            sans.executer_a(Commande::Minuterie { id: None, on: true }, 0),
+            Err(ErreurSeance::SansMinuterie)
+        );
+        let (mut s, _) = ordre_lance(Some(60));
+        s.executer(Commande::Reinitialiser { id: None }).unwrap();
+        assert_eq!(s.etape(1).unwrap().fin_minuterie, None);
+        assert_eq!(
+            s.executer(Commande::Minuterie { id: None, on: true }),
+            Err(ErreurSeance::HeureNecessaire)
+        );
+    }
+
+    #[test]
+    fn la_minuterie_se_rejoue_depuis_le_journal() {
+        let (_, journal) = ordre_lance(Some(60));
+        let lignes: Vec<String> =
+            journal.iter().map(|e| serde_json::to_string(e).unwrap()).collect();
+        let relu: Vec<Evenement> =
+            lignes.iter().map(|l| serde_json::from_str(l).unwrap()).collect();
+        let r = Seance::rejouer(&relu).unwrap();
+        assert_eq!(r.etape(1).unwrap().fin_minuterie, Some(61_000));
+        assert_eq!(r.minuteries_echues(61_000), vec![1]);
+    }
+
+    #[test]
+    fn la_vue_participant_cache_l_ordre_jusqu_a_la_revelation() {
+        let (mut s, _) = ordre_lance(Some(60));
+        let json = serde_json::to_value(s.vue_participant(1, 1_000)).unwrap();
+        let textes: Vec<&str> = json["activite"]["elements"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|e| e["texte"].as_str().unwrap())
+            .collect();
+        assert_ne!(textes, vec!["Accueil", "Débat", "Décision"]);
+        assert!(json["activite"].get("solution").is_none());
+        assert_eq!(json["activite"]["reste_ms"], 60_000);
+        s.executer(Commande::Reveler { id: None, on: true }).unwrap();
+        let json = serde_json::to_value(s.vue_participant(1, 1_000)).unwrap();
+        assert!(json["activite"]["solution"].is_array());
     }
 }
